@@ -8,31 +8,35 @@ import java.util.Scanner;
 
 
 public class Client {
-
   public static void main(String[] args) throws IOException {
 
+    //initiating the socket Channel
     InetSocketAddress addr = new InetSocketAddress("localhost",1234);
     SocketChannel client = SocketChannel.open(addr);
     
     // Test that sends "Hello" to server
     String str = "Hello";
 
+    //Creating a buffer
     byte[] message = new String(str).getBytes();
     ByteBuffer buffer = ByteBuffer.wrap(message);
+
+    //Sending buffer to server.
     client.write(buffer);
     buffer.clear();
-
     buffer = ByteBuffer.allocate(256);
     client.read(buffer);
-
+    System.out.println("SUCCESS");
+    client.read(buffer);
     String stri = new String(buffer.array()).trim();
-
-    System.out.println(stri);
-
-
-    client.close();
+    System.out.print(stri);    
+    
+    //Reading response from a server.
 
 
+    //Printing output.
+
+    //client.close();
   }
 
 }
