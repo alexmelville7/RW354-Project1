@@ -13,7 +13,13 @@ public class Client {
     //initiating the socket Channel
     InetSocketAddress addr = new InetSocketAddress("localhost",1234);
     SocketChannel client = SocketChannel.open(addr);
-    
+
+
+    // TODO: Ask for nickname.
+    // TODO: Send to server to test for uniqueness. Cannot proceed to messaging until unique.
+    // TODO: Once at the messaging stage we need to take message string and send it a message object.
+
+
     // Test that sends "Hello" to server
     String str = "Hello";
 
@@ -29,8 +35,8 @@ public class Client {
     System.out.println("SUCCESS");
     client.read(buffer);
     String stri = new String(buffer.array()).trim();
-    System.out.print(stri);    
-    
+    System.out.print(stri);
+
     //Reading response from a server.
 
 
@@ -40,23 +46,3 @@ public class Client {
   }
 
 }
-
-
-/*
-int number = 42;
-Socket s = null;
-try {
-s = new Socket("127.0.0.1", 1342);
-} catch (IOException e) {
-e.printStackTrace();
-}
-Scanner sc = new Scanner(s.getInputStream());
-PrintStream p = null;
-
-p = new PrintStream(s.getOutputStream());
-
-
-p.println(number);
-int temp = sc.nextInt();
-System.out.println(temp);
-*/

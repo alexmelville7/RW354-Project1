@@ -11,13 +11,12 @@ import java.util.Set;
 
 public class Server {
 
+  Set<String> nickNames;
 
 
   Server() throws Throwable {
 
   }
-
-
 
   public static void main(String[] args) throws Throwable {
 
@@ -48,10 +47,15 @@ public class Server {
 
         //Connects to socket if possible.
         if (mykey.isAcceptable()) {
+          System.out.println("acceptable");
           SocketChannel client = ssc.accept();
           client.configureBlocking(false);
           client.register(selector, SelectionKey.OP_READ);
-        } 
+
+          // TODO: maybe print 'connect' message
+
+
+        }
         //Checks whether socket channel is ready to be read.
         else if (mykey.isReadable()) {
           SocketChannel client = (SocketChannel) mykey.channel();
@@ -60,27 +64,28 @@ public class Server {
           String str = new String(buffer.array()).trim();
           System.out.println(str);
 
-          //TODO: ADD protocols class.
+          //TODO: Add protocols class.
           if (str.equals("Bye")) {
             client.close();
           }
         }
-
-        //Checks whether socket channel is ready to write. 
+        //Checks whether socket channel is ready to write.
         else if(mykey.isWritable()){
           SocketChannel client = (SocketChannel) mykey.channel();
           String str = "HIIII";
           byte[] message = str.getBytes();
           ByteBuffer buffer = ByteBuffer.wrap(message);
+          buffer.flip();
           client.write(buffer);
 
           //TODO: What is the point of closing if you are just going to connect again?
           if(str.equals("Bye")) {
+            // TODO: print disconnect message
             client.close();
           }
         }
 
-        
+
 
         iterator.remove();
       }
@@ -89,16 +94,3 @@ public class Server {
   }
 
 }
-
-/*
-* int number;
-ServerSocket s1 = new ServerSocket(1342);
-Socket ss = s1.accept();
-Scanner sc = new Scanner(ss.getInputStream());
-
-number = sc.nextInt();
-
-number = number *2;
-PrintStream p = new PrintStream(ss.getOutputStream());
-p.println(number);
-* */
