@@ -15,14 +15,6 @@ import java.lang.String;
 
 
 public class Server {
-
-    Set<String> nickNames;
-
-
-    Server() throws Throwable {
-
-    }
-
     public static void main(String[] args) throws Throwable {
 
         Scanner sc = new Scanner(System.in);
@@ -41,6 +33,7 @@ public class Server {
 
         //Register channel
         ssc.register(selector, SelectionKey.OP_ACCEPT);
+
 
 
         while (true) {
@@ -68,36 +61,34 @@ public class Server {
 
                 //if readable then server is ready to read.
                 if(key.isReadable()){
-                    SocketChannel client = (SocketChannel) key.channel();
-
-                    //Read byte coming from the client.
                     int BUFFER_SIZE = 1024;
                     ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
+                    SocketChannel client = (SocketChannel) key.channel();
+
                     try{
                         client.read(buffer);
                         String test = new String(buffer.array()).trim();
                         if(!test.isEmpty()) {
-                            System.out.println(test);
-                            buffer.clear();
+                            System.out.println("Client: " + test);
                         }
+                        buffer.clear();
                     } catch(Exception E) {
                         E.printStackTrace();
-                        continue;
                     }
                 }
 
-                //if writeable then server is ready to write.
-                if(key.isWritable()){
-                    System.out.println("TEST");
+                //if write able then server is ready to write.
+                //This will be changed to a method that writes the data to another client.
+                 else if(key.isWritable()){
+                    int BUFFER_SIZE = 1024;
+                    ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
+                    System.out.print("Server: ");
                     SocketChannel client = (SocketChannel) key.channel();
                     String test = sc.nextLine();
-                    int BUFFER_SIZE = 2048;
-                    ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
                     buffer.put(test.getBytes());
                     buffer.flip();
                     client.write(buffer);
                     buffer.clear();
-
                 }
             }
         }
