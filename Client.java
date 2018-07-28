@@ -1,5 +1,6 @@
-package com.company;
+package Chat;
 
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.io.IOException;
@@ -14,7 +15,7 @@ public class Client {
     private SocketChannel sockChannel;
 
 
-    Client(String nickName)  throws IOException {
+    public Client(String nickName)  throws IOException {
         this.nickName = nickName;
 
         // Initiating the socket Channel
@@ -24,13 +25,29 @@ public class Client {
 
     }
 
-    private void sendMessage(String str) throws IOException {
-        // Creating a buffer
-        byte[] message = new String(str).getBytes();
-        ByteBuffer buffer = ByteBuffer.wrap(message);
 
-        //Sending buffer to server.
-        sockChannel.write(buffer);
+    /**
+     * TODO: finish
+     * Function that receives global messages.
+     * This function receives a global message publicly from everyone
+     * @throws IOException
+     * */
+    public void receiveGlobalMessages() throws IOException, ClassNotFoundException {
+
+
+    }
+
+    /**
+     * TODO: finish
+     * Function that sends global messages.
+     * This function sends a global message publicly to everyone
+     * @throws IOException
+     * */
+    public void sendGlobalMessage(String str) throws IOException {
+        ByteBuffer buffer = ByteBuffer.allocate(2048);
+        buffer.put(str.getBytes());
+        buffer.flip();
+        this.sockChannel.write(buffer);
         buffer.clear();
     }
 
@@ -40,12 +57,13 @@ public class Client {
     // TODO: Once at the messaging stage we need to take message string and send it a message object.
     public static void main(String[] args) throws IOException {
 
-
         SocketAddress address = new InetSocketAddress("localhost", 4444);
         SocketChannel client = SocketChannel.open(address);
 
         ByteBuffer buffer = ByteBuffer.allocate(2048);
         Scanner sc = new Scanner(System.in);
+
+
         while(true){
             //buffer.flip();
             client.read(buffer);
