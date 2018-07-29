@@ -1,32 +1,35 @@
+package Chat;
+
+import java.io.Serializable;
 import java.util.Date;
 
-public class Message {
+public class Message implements Serializable {
 
-  private final String message;
-  private final String nickname;
-  private final Date date;
+    private final String message;
+    private final Date date;
+    private final String sender;
+    private final String receiver;
 
-  Message(String message, String username) {
-    this.message = message;
-    this.nickname = username;
-    this.date = new Date();
-  }
+    Message(String message, String sender, String receiver) {
+        this.message = message;
+        this.sender = sender;
+        this.receiver = receiver;
+        this.date = new Date();
+    }
 
-  public String getMessage() {
-    return message;
-  }
+    public String getMessage() {
+        return message;
+    }
 
-  public String getNickname() {
-    return nickname;
-  }
+    public String getSender() {
+        return sender;
+    }
 
-  public Date getDate() {
-    return date;
-  }
+    public String getReceiver() {
+        return receiver;
+    }
+
+    public Date getDate() {
+        return date;
+    }
 }
-
-/*
-Plagiarism declaration:
-
-https://crunchify.com/java-nio-non-blocking-io-with-server-client-example-java-nio-bytebuffer-and-channels-selector-java-nio-vs-io/
-*/
