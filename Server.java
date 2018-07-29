@@ -126,7 +126,7 @@ public class Server {
           client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
           continue;
         }
-        
+
         // If readable then server is ready to read.
         if(key.isReadable()){
           SocketChannel client = (SocketChannel) key.channel();
@@ -140,6 +140,63 @@ public class Server {
             if(!test.isEmpty()) {
               System.out.println(test);
               buffer.clear();
+=======
+
+        while (true) {
+            int ready_count = selector.select();
+            if(ready_count == 0){
+                continue;
+            }
+
+            Set<SelectionKey> ready_keys = selector.selectedKeys();
+            Iterator<SelectionKey> iterator = ready_keys.iterator();
+            while (iterator.hasNext()){
+                SelectionKey key = iterator.next();
+                iterator.remove();
+
+                if(key.isAcceptable()){
+                    ServerSocketChannel server = (ServerSocketChannel) key.channel();
+                    //get client socket channel
+                    SocketChannel client = server.accept();
+                    client.configureBlocking(false);
+
+                    //register for read and write operations.
+                    client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                    continue;
+                }
+
+                //if readable then server is ready to read.
+                if(key.isReadable()){
+                    int BUFFER_SIZE = 1024;
+                    ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
+                    SocketChannel client = (SocketChannel) key.channel();
+
+                    try{
+                        client.read(buffer);
+                        String test = new String(buffer.array()).trim();
+                        if(!test.isEmpty()) {
+                            System.out.println("Client: " + test);
+                        }
+                        buffer.clear();
+                    } catch(Exception E) {
+                        E.printStackTrace();
+                    }
+                }
+
+                //if write able then server is ready to write.
+                //This will be changed to a method that writes the data to another client.
+                 else if(key.isWritable()){
+                    int BUFFER_SIZE = 1024;
+                    ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
+                    System.out.print("Server: ");
+                    SocketChannel client = (SocketChannel) key.channel();
+                    String test = sc.nextLine();
+                    buffer.put(test.getBytes());
+                    buffer.flip();
+                    client.write(buffer);
+                    buffer.clear();
+                }
+>>>>>>> 006d7b8391508e41d9d1fb87b58964c1816b0ec3
             }
           } catch(Exception E) {
             E.printStackTrace();
