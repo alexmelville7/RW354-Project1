@@ -24,7 +24,7 @@ public class ClientGUI {
                 System.out.println(nickname);
                 try {
                     Client cli = new Client(nickname);
-//                    cli.sendGlobalMessage(nickname);
+                    cli.sendGlobalMessage(nickname);
                     /*JFrame frame2 = new JFrame("Chat.ChatGUI" );
                     frame2.setContentPane(new ChatGUI().Main);
                     frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,6 +47,39 @@ public class ClientGUI {
                 }
             }
         });
+
+        NameInput.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nickname = NameInput.getText();
+                System.out.println(nickname);
+                try {
+                    Client cli = new Client(nickname);
+                    cli.sendGlobalMessage(nickname);
+                    /*JFrame frame2 = new JFrame("Chat.ChatGUI" );
+                    frame2.setContentPane(new ChatGUI().Main);
+                    frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    frame2.pack();
+                    frame2.setVisible(true);
+                    frame.setVisible(false);*/
+                    if (cli.sendNickName() == true) {
+                        JFrame frame2 = new JFrame("Chat.ChatGUI" );
+                        frame2.setContentPane(new ChatGUI().Main);
+                        frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        frame2.pack();
+                        frame2.setVisible(true);
+                        frame.setVisible(false);
+                    } else {
+                        // TODO print error message in the GUI
+
+                    }
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+
     }
 
     public static void main(String[] args) {

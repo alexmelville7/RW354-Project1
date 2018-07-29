@@ -17,22 +17,43 @@ public class ChatGUI {
     private JButton sendButton;
     private JTabbedPane tabbedPane1;
     private JScrollBar scrollBar1;
+    private JLabel WelcomeLabel;
 
 
     public ChatGUI() {
+        WelcomeLabel.setText(WelcomeLabel.getText() + "text u want to append");
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String message = textField1.getText();
                 System.out.println(message);
-                try {
+                ChatArea.append(message + "\n");
+              /*  try {
                     Client cli = new Client(message);
                     cli.sendGlobalMessage(message);
                 } catch (IOException e1) {
                     e1.printStackTrace();
-                }
+                }*/
+                textField1.setText("");
             }
         });
+
+        textField1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String message = textField1.getText();
+                System.out.println(message);
+                ChatArea.append(message + "\n");
+              /*  try {
+                    Client cli = new Client(message);
+                    cli.sendGlobalMessage(message);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }*/
+                textField1.setText("");
+            }
+        });
+
     }
 
     public static void main(String[] args) {

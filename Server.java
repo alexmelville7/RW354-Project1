@@ -100,7 +100,7 @@ public class Server {
   * @return true if name is not already in use on the server.
   * */
   private static Boolean isUniqueName(String name) {
-    System.out.println(name);
+    //        System.out.println(name);
     return (nickNames.get(name) == null);
   }
 
@@ -154,7 +154,7 @@ public class Server {
           client.read(buffer1);
           String name = new String(buffer1.array()).trim();
 
-          // TODO for testing
+          // TODO for testing, you can remove it when the map is populated
           nickNames.put("test", client.getLocalAddress());
 
 
@@ -186,8 +186,9 @@ public class Server {
 
           try{
             client.read(buffer);
-            //                        String test = new String(buffer.array()).trim();
+            //String test = new String(buffer.array()).trim();
             Message msg = receiveGlobalMessage(client, buffer.array());
+            System.out.println(msg.getMessage());
             if(!msg.getMessage().isEmpty()) {
               System.out.println("Client: " + msg.getMessage());
             }
