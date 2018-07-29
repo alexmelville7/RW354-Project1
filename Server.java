@@ -84,63 +84,26 @@ public class Server {
   }
 
 
-  public static void main(String[] args) throws Throwable {
+public static void main(String[] args) throws Throwable {
 
-    Scanner sc = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
 
-    // Setup the server connection
-    // Selector is used to communicate with multiple channels.
-    Selector selector = Selector.open();
+        // Setup the server connection
+        // Selector is used to communicate with multiple channels.
+        Selector selector = Selector.open();
 
-    // Initialising the server socket channel.
-    ServerSocketChannel ssc = ServerSocketChannel.open();
-    ssc.configureBlocking(false);
+        // Initialising the server socket channel.
+        ServerSocketChannel ssc = ServerSocketChannel.open();
+        ssc.configureBlocking(false);
 
-    // Bind Port
-    InetSocketAddress host_address = new InetSocketAddress(4444);
-    ssc.bind(host_address);
+        //Bind Port
+        InetSocketAddress host_address = new InetSocketAddress(4444);
+        ssc.bind(host_address);
 
-    // Register channel
-    ssc.register(selector, SelectionKey.OP_ACCEPT);
+        //Register channel
+        ssc.register(selector, SelectionKey.OP_ACCEPT);
 
 
-    while (true) {
-      int ready_count = selector.select();
-      if(ready_count == 0){
-        continue;
-      }
-
-      Set<SelectionKey> ready_keys = selector.selectedKeys();
-      Iterator<SelectionKey> iterator = ready_keys.iterator();
-      while (iterator.hasNext()){
-        SelectionKey key = iterator.next();
-        iterator.remove();
-
-        if(key.isAcceptable()){
-          ServerSocketChannel server = (ServerSocketChannel) key.channel();
-          // Get client socket channel
-          SocketChannel client = server.accept();
-          client.configureBlocking(false);
-
-          // Register for read and write operations.
-          client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-          continue;
-        }
-
-        // If readable then server is ready to read.
-        if(key.isReadable()){
-          SocketChannel client = (SocketChannel) key.channel();
-
-          // Read byte coming from the client.
-          int BUFFER_SIZE = 1024;
-          ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
-          try{
-            client.read(buffer);
-            String test = new String(buffer.array()).trim();
-            if(!test.isEmpty()) {
-              System.out.println(test);
-              buffer.clear();
-=======
 
         while (true) {
             int ready_count = selector.select();
@@ -196,28 +159,7 @@ public class Server {
                     client.write(buffer);
                     buffer.clear();
                 }
->>>>>>> 006d7b8391508e41d9d1fb87b58964c1816b0ec3
             }
-          } catch(Exception E) {
-            E.printStackTrace();
-          }
-          continue;
         }
-
-        // If writeable then server is ready to write.
-        if(key.isWritable()){
-          int BUFFER_SIZE = 2048;
-          System.out.println("TEST");
-          SocketChannel client = (SocketChannel) key.channel();
-          String test = sc.nextLine();
-          ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
-          buffer.put(test.getBytes());
-          buffer.flip();
-          client.write(buffer);
-          buffer.clear();
-          continue;
-        }
-      }
     }
-  }
 }
