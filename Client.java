@@ -43,8 +43,8 @@ public class Client {
   * @throws IOException
   * */
   public Message receiveGlobalMessages() throws IOException, ClassNotFoundException {
-    Message msg = new Message("hello", "Alex", "Michael");
-    return msg;
+    //        Message msg = new Message("hello", "Alex", "Michael");
+    return null;
   }
 
   /**
