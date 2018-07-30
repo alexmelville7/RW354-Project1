@@ -15,7 +15,6 @@ public class Client {
   private static InetSocketAddress addr;
   private static SocketChannel client;
   private static SocketChannel sockChannel;
-  private static SocketAddress address = new InetSocketAddress("localhost", 4444);
   private static int BUFFER_SIZE = 1024;
 
 
@@ -43,9 +42,9 @@ public class Client {
   * This function receives a global message publicly from everyone
   * @throws IOException
   * */
-  public void receiveGlobalMessages() throws IOException, ClassNotFoundException {
-
-
+  public Message receiveGlobalMessages() throws IOException, ClassNotFoundException {
+    Message msg = new Message("hello", "Alex", "Michael");
+    return msg;
   }
 
   /**
@@ -61,6 +60,7 @@ public class Client {
     this.sockChannel.write(buffer);
     buffer.clear();*/
 
+    // Create a new message object
     Message msg = new Message(str, this.nickName, "GLOBAL");
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -80,8 +80,6 @@ public class Client {
 
       }
     }
-
-
   }
 
   public boolean sendNickName(){

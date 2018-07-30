@@ -32,10 +32,10 @@ public class Server {
   * TODO: finish
   * Function that receivess global messages.
   * This function receives a global message publicly from a user
-  * @param sc: this is the socketChannel that the message is passed to.
+  * @param bytes byte array
   * @throws IOException If something goes wrong with I/O
   * */
-  private static Message receiveGlobalMessage(SocketChannel sc, byte[] bytes) throws IOException, ClassNotFoundException {
+  private static Message receiveGlobalMessage(byte[] bytes) throws IOException, ClassNotFoundException {
     ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
     ObjectInput in = null;
     Message msg = null;
@@ -140,8 +140,8 @@ public class Server {
         iterator.remove();
 
         if(key.isAcceptable()){
-          ServerSocketChannel server = (ServerSocketChannel) key.channel();
           // Get client socket channel
+          ServerSocketChannel server = (ServerSocketChannel) key.channel();
           SocketChannel client = server.accept();
           client.configureBlocking(false);
 
@@ -156,7 +156,6 @@ public class Server {
 
           // TODO for testing, you can remove it when the map is populated
           nickNames.put("test", client.getLocalAddress());
-
 
           if(isUniqueName(name)) {
             String msg = "Successful";
@@ -175,7 +174,6 @@ public class Server {
             buffer2.clear();
             client.close();
           }
-
           continue;
         }
 
@@ -187,10 +185,9 @@ public class Server {
           try{
             client.read(buffer);
             //String test = new String(buffer.array()).trim();
-            Message msg = receiveGlobalMessage(client, buffer.array());
-            System.out.println(msg.getMessage());
+            Message msg = receiveGlobalMessage(buffer.array());
             if(!msg.getMessage().isEmpty()) {
-              System.out.println("Client: " + msg.getMessage());
+              System.out.println(msg.getSender()+": " + msg.getMessage());
             }
             buffer.clear();
           } catch(Exception E) {
