@@ -11,67 +11,74 @@ import java.io.IOException;
 
 
 public class ClientGUI {
-    private JButton SendButton;
-    private JTextField NameInput;
-    private JPanel Main;
-    private static JFrame frame;
+  private JButton SendButton;
+  private JTextField NameInput;
+  private JPanel Main;
+  private static JFrame frame;
 
-    public ClientGUI() {
-        SendButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e){
-                String nickname = NameInput.getText();
-                System.out.println(nickname);
-                try {
-                    Client cli = new Client(nickname);
-                    if (cli.sendNickName() == true) {
-                        JFrame frame2 = new JFrame("Chat.ChatGUI" );
-                        frame2.setContentPane(new ChatGUI(cli).Main);
-                        frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                        frame2.pack();
-                        frame2.setVisible(true);
-                        frame.setVisible(false);
-                    } else {
-                        // TODO print error message in the GUI
+  public ClientGUI() {
+    SendButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String nickname = NameInput.getText();
+        System.out.println(nickname);
+        try {
+          Client cli = new Client(nickname);
 
-                    }
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
+          if (cli.sendNickName() == true) {
+            JFrame frame2 = new JFrame("Chat.ChatGUI" );
+            frame2.setContentPane(new ChatGUI(cli).Main);
+            frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame2.pack();
+            frame2.setVisible(true);
+            frame.setVisible(false);
+          } else {
+            // TODO print error message in the GUI
 
-        NameInput.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String nickname = NameInput.getText();
-                System.out.println(nickname);
-                try {
-                    Client cli = new Client(nickname);
-                    if (cli.sendNickName() == true) {
-                        JFrame frame2 = new JFrame("Chat.ChatGUI" );
-                        frame2.setContentPane(new ChatGUI(cli).Main);
-                        frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                        frame2.pack();
-                        frame2.setVisible(true);
-                        frame.setVisible(false);
-                    } else {
-                        // TODO print error message in the GUI
+          }
+        } catch (IOException e1) {
+          e1.printStackTrace();
+        }
+      }
+    });
 
-                    }
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-    }
+    NameInput.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String nickname = NameInput.getText();
+        System.out.println(nickname);
+        try {
+          Client cli = new Client(nickname);
 
-    public static void main(String[] args) {
-        frame = new JFrame("Chat.Client" );
-        frame.setContentPane(new ClientGUI().Main);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-    }
+          if (cli.sendNickName() == true) {
+            JFrame frame2 = new JFrame("Chat.ChatGUI" );
+            frame2.setContentPane(new ChatGUI(cli).Main);
+            frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame2.pack();
+            frame2.setVisible(true);
+            frame.setVisible(false);
+          } else {
+            // TODO print error message in the GUI
+
+          }
+        } catch (IOException e1) {
+          e1.printStackTrace();
+        }
+      }
+    });
+
+
+  }
+
+
+
+
+  public static void main(String[] args) {
+    frame = new JFrame("Chat.Client" );
+    frame.setContentPane(new ClientGUI().Main);
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.pack();
+    frame.setVisible(true);
+  }
 
 }
