@@ -19,21 +19,14 @@ public class ClientGUI {
     public ClientGUI() {
         SendButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e){
                 String nickname = NameInput.getText();
                 System.out.println(nickname);
                 try {
                     Client cli = new Client(nickname);
-                    cli.sendGlobalMessage(nickname);
-                    /*JFrame frame2 = new JFrame("Chat.ChatGUI" );
-                    frame2.setContentPane(new ChatGUI().Main);
-                    frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    frame2.pack();
-                    frame2.setVisible(true);
-                    frame.setVisible(false);*/
                     if (cli.sendNickName() == true) {
                         JFrame frame2 = new JFrame("Chat.ChatGUI" );
-                        frame2.setContentPane(new ChatGUI().Main);
+                        frame2.setContentPane(new ChatGUI(cli).Main);
                         frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                         frame2.pack();
                         frame2.setVisible(true);
@@ -55,16 +48,9 @@ public class ClientGUI {
                 System.out.println(nickname);
                 try {
                     Client cli = new Client(nickname);
-                    cli.sendGlobalMessage(nickname);
-                    /*JFrame frame2 = new JFrame("Chat.ChatGUI" );
-                    frame2.setContentPane(new ChatGUI().Main);
-                    frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    frame2.pack();
-                    frame2.setVisible(true);
-                    frame.setVisible(false);*/
                     if (cli.sendNickName() == true) {
                         JFrame frame2 = new JFrame("Chat.ChatGUI" );
-                        frame2.setContentPane(new ChatGUI().Main);
+                        frame2.setContentPane(new ChatGUI(cli).Main);
                         frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                         frame2.pack();
                         frame2.setVisible(true);
@@ -78,8 +64,6 @@ public class ClientGUI {
                 }
             }
         });
-
-
     }
 
     public static void main(String[] args) {

@@ -1,5 +1,4 @@
 package Chat;
-package Chat;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -11,6 +10,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.*;
 import java.lang.String;
+import Chat.Client;
 
 
 
@@ -27,72 +27,6 @@ public class Server {
 
   public static Map<String, SocketAddress> getNickNames() {
     return nickNames;
-  }
-
-  /**
-  * TODO: finish
-  * Function that receivess global messages.
-  * This function receives a global message publicly from a user
-  * @param sc: this is the socketChannel that the message is passed to.
-  * @throws IOException If something goes wrong with I/O
-  * */
-  private static Message receiveGlobalMessage(SocketChannel sc, byte[] bytes) throws IOException, ClassNotFoundException {
-    ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-    ObjectInput in = null;
-    Message msg = null;
-
-    try {
-      in = new ObjectInputStream(bis);
-      msg = (Message) in.readObject();
-    } finally {
-      try {
-        if (in != null) {
-          in.close();
-        }
-      } catch (IOException ex){
-
-      }
-    }
-    return msg;
-  }
-
-
-
-  /**
-  * TODO: finish
-  * Function that sends global messages.
-  * This function sends a global message publicly to everyone
-  * @param sc: this is the socketChannel that the message is passed to.
-  * @throws IOException If something goes wrong with I/O
-  * */
-  private void sendGlobalMessages(SocketChannel sc) throws IOException {
-
-
-  }
-
-
-  /**
-  * TODO: finish
-  * Function that receives whispered messages.
-  * This function receives a whispered message privately from one person
-  * @param sc: this is the socketChannel that the message is passed from.
-  * @throws IOException If something goes wrong with I/O
-  * */
-  private void receiveWhisperMessage(SocketChannel sc) throws IOException, ClassNotFoundException {
-
-  }
-
-  /**
-  * TODO: finish
-  * Function that sends whispered messages.
-  * This function sends a whispered message privately to one person
-  * @param sc: this is the socketChannel that the message is passed to.
-  * @param msg: the message to be passed.
-  * @throws IOException If something goes wrong with I/O
-  * */
-  private void sendWhisperMessage(SocketChannel sc, Message msg) throws IOException {
-
-
   }
 
   /**
@@ -126,8 +60,6 @@ public class Server {
     ssc.register(selector, SelectionKey.OP_ACCEPT);
 
 
-
-
     while (true) {
       int ready_count = selector.select();
       if(ready_count == 0){
@@ -152,28 +84,25 @@ public class Server {
           // Checking NickName
           ByteBuffer buffer1 = ByteBuffer.allocate(BUFFER_SIZE);
           ByteBuffer buffer2 = ByteBuffer.allocate(BUFFER_SIZE);
-          client.read(buffer1);
-          String name = new String(buffer1.array()).trim();
 
-          // TODO for testing, you can remove it when the map is populated
-          nickNames.put("test", client.getLocalAddress());
+          Message m1 = new Message("test", "Michael", "GLOBAL");
 
 
-          if(isUniqueName(name)) {
+            // TODO for testing, you can remove it when the map is populated
+          nickNames.put(m1.getSender(), client.getLocalAddress());
+
+
+          if(isUniqueName(m1.getSender())) {
             String msg = "Successful";
-            buffer2.put(msg.getBytes());
-            buffer2.flip();
-            client.write(buffer2);
-            buffer2.clear();
+            Message m = new Message(msg, "Michael", "GLOBAL");
+            m.ServerSend(client);
 
             //TODO: Test when have multiple clients.
-            nickNames.put(name, client.getLocalAddress());
+            nickNames.put(m1.getSender(), client.getLocalAddress());
           } else {
             String msg = "Unsuccessful";
-            buffer2.put(msg.getBytes());
-            buffer2.flip();
-            client.write(buffer2);
-            buffer2.clear();
+            Message m = new Message(msg, "Michael", "GLOBAL");
+            m.ServerSend(client);
             client.close();
           }
 
@@ -182,20 +111,16 @@ public class Server {
 
         // If readable then server is ready to read.
         if(key.isReadable()){
-          ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
           SocketChannel client = (SocketChannel) key.channel();
 
           try{
-            client.read(buffer);
-            //String test = new String(buffer.array()).trim();
-            Message msg = receiveGlobalMessage(client, buffer.array());
+            Message msg = Message.ServerRecieve(client);
             System.out.println(msg.getMessage());
             if(!msg.getMessage().isEmpty()) {
               System.out.println("Client: " + msg.getMessage());
             }
-            buffer.clear();
           } catch(Exception E) {
-            E.printStackTrace();
+            System.out.println("ERROR Reading.");
           }
         }
         // If write able then server is ready to write.
@@ -205,10 +130,8 @@ public class Server {
           System.out.print("Server: ");
           SocketChannel client = (SocketChannel) key.channel();
           String test = sc.nextLine();
-          buffer.put(test.getBytes());
-          buffer.flip();
-          client.write(buffer);
-          buffer.clear();
+          Message msg = new Message(test, "Michael", "GLOBAL");
+          msg.ServerSend(client);
         }
       }
     }
