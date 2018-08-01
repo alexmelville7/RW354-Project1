@@ -56,29 +56,29 @@ public class Client {
      * @throws IOException
      * */
     private Message receiveGlobalMessage(SocketChannel sc, byte[] bytes) throws IOException, ClassNotFoundException {
-            ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-            ObjectInput in = null;
-            Message msg = null;
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        ObjectInput in = null;
+        Message msg = null;
 
+        try {
+            in = new ObjectInputStream(bis);
+            msg = (Message) in.readObject();
+        }
+
+        catch(Exception E){
+            System.out.println("Error receiving message: " + E);
+        }
+
+        finally {
             try {
-                in = new ObjectInputStream(bis);
-                msg = (Message) in.readObject();
-            }
-
-            catch(Exception E){
-                System.out.println("Error receiving message: " + E);
-            }
-
-            finally {
-                try {
-                    if (in != null) {
-                        in.close();
-                    }
-                } catch (Exception E){
-                    System.out.println("Error receiving message: NESTED: " + E);
+                if (in != null) {
+                    in.close();
                 }
+            } catch (Exception E){
+                System.out.println("Error receiving message: NESTED: " + E);
             }
-            return msg;
+        }
+        return msg;
     }
 
     public boolean sendNickName(){

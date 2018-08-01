@@ -10,37 +10,38 @@ import java.util.Date;
 public class Message implements Serializable {
 
     private final String message;
+    private final String messageType;
     private final Date date;
     private final String sender;
     private final String receiver;
     private static int BUFFER_SIZE = 1024;
+
+
+    /******************************************** Constructors ********************************************/
 
     public Message(String message, String sender, String receiver) {
         this.message = message;
         this.sender = sender;
         this.receiver = receiver;
         this.date = new Date();
+        this.messageType = "MESSAGE";
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public String getSender() {
-        return sender;
-    }
-
-    public String getReceiver() {
-        return receiver;
-    }
-
-    public Date getDate() {
-        return date;
+    public Message(String user, String type) {
+        this.message = user;
+        this.receiver = null;
+        this.sender = null;
+        this.date = new Date();
+        this.messageType = type;
     }
 
 
+    /******************************************** Communication Functions ********************************************/
 
-    //Communication Functions
+    /**
+     * Function that is used by the server to send a message
+     * @param sc - The socket channel that message is sent on
+     * */
     public void ServerSend(SocketChannel sc){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos;
@@ -66,6 +67,10 @@ public class Message implements Serializable {
         }
     }
 
+    /**
+     * Function that is used by the server to receive a message
+     * @param sc - The socket channel that message is sent on
+     * */
     public static Message ServerRecieve(SocketChannel sc){
         Message m = null;
         ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
@@ -94,8 +99,12 @@ public class Message implements Serializable {
         return m;
     }
 
-    public void ClientSend(SocketChannel sc){
 
+    /**
+     * Function that is used by the client to send a message
+     * @param sc - The socket channel that message is sent on
+     * */
+    public void ClientSend(SocketChannel sc){
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = null;
         try {
@@ -110,7 +119,6 @@ public class Message implements Serializable {
         } catch(Exception E) {
             System.out.println("ERROR: Sending Client side - " + E);
         }
-
         finally
         {
             try {
@@ -119,7 +127,29 @@ public class Message implements Serializable {
                 System.out.println("ERROR: Sending Message from Client");
             }
         }
+    }
 
+
+    /******************************************** Getters and Setters ********************************************/
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public String getReceiver() {
+        return receiver;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public String getMessageType() {
+        return messageType;
     }
 
 }
