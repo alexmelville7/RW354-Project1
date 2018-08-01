@@ -1,98 +1,112 @@
 package Chat;
+import GUI.ChatGUI;
 
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.InetSocketAddress;
-import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 
+
 public class Client {
-  private static String nickName = "Michael";
-  private static InetSocketAddress addr;
-  private static SocketChannel sockChannel;
-  private static int BUFFER_SIZE = 1024;
+    private static String nickName = "Michael";
+    private static InetSocketAddress addr;
+    private static SocketChannel client;
+    private static SocketChannel sockChannel;
+    private static SocketAddress address = new InetSocketAddress("localhost", 4444);
+    private static int BUFFER_SIZE = 1024;
 
 
-  public Client(String nickName)  throws IOException {
-    this.nickName = nickName;
+    //Main Method
+    // TODO: Ask for nickname.
+    // TODO: Send to server to test for uniqueness. Cannot proceed to messaging until unique.
+    // TODO: Once at the messaging stage we need to take message string and send it a message object.
+    public static void main(String[] args) throws IOException {
 
-    // Initiating the socket Channel
-    addr = new InetSocketAddress("localhost",4444);
-    sockChannel = SocketChannel.open(addr);
-    sockChannel.configureBlocking(false);
-  }
-
-  public static String getNickName() {
-    return nickName;
-  }
-
-  public static SocketChannel getSockChannel() {
-    return sockChannel;
-  }
-
-  /**
-  * TODO: finish
-  * Function that sends global messages.
-  * This function sends a global message publicly to everyone
-  * @throws IOException
-  * */
-  public void sendGlobalMessage(String str) throws IOException {
-    //        ByteBuffer buffer = ByteBuffer.allocate(2048);
-    /*buffer.put(str.getBytes());
-    buffer.flip();
-    this.sockChannel.write(buffer);
-    buffer.clear();*/
-
-    // Create a new message object
-    Message msg = new Message(str, this.nickName, "GLOBAL");
-
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    ObjectOutput out = null;
-    try {
-      out = new ObjectOutputStream(bos);
-      out.writeObject(msg);
-      out.flush();
-      byte[] bytes = bos.toByteArray();
-      ByteBuffer buffer = ByteBuffer.wrap(bytes);
-      this.sockChannel.write(buffer);
-      buffer.clear();
-    } finally {
-      try {
-        bos.close();
-      } catch (IOException ex) {
-
-      }
-    }
-  }
-
-  public boolean sendNickName(){
-    try{
-      Message m = new Message(nickName, "Michael", "GLOBAL");
-      m.ServerSend(sockChannel);
-    } catch(Exception E) {
-      System.out.println("Error: Sending nickName  " + E);
+        //Send(client);
+//        Receive(client);
+        //If you close the client now, the client will instantly close because it's a thread.
+        //client.close();
     }
 
+    //Constructor
+    public Client(String nickName)  throws IOException {
+        this.nickName = nickName;
 
-    //Receive Data.
-    try{
-      Message m = Message.ServerReceive(sockChannel);
-      System.out.println(m.getMessage());
-      if(m.getMessage().equals("Successful")){
-        System.out.println("Connected to Server.");
-        return true;
-      } else {
-        System.out.println("Unable to connect to Server. Nickname is already in use.");
+        // Initiating the socket Channel
+        addr = new InetSocketAddress("localhost",4444);
+        sockChannel = SocketChannel.open(addr);
+        sockChannel.configureBlocking(false);
+    }
+
+    public SocketChannel getSockChannel() {
+        return sockChannel;
+    }
+
+    //Getters and Setters
+    public static String getNickName() {
+        return nickName;
+    }
+
+    /**
+     * TODO: finish
+     * Function that receives global messages.
+     * This function receives a global message publicly from everyone
+     * @throws IOException
+     * */
+    private Message receiveGlobalMessage(SocketChannel sc, byte[] bytes) throws IOException, ClassNotFoundException {
+            ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+            ObjectInput in = null;
+            Message msg = null;
+
+            try {
+                in = new ObjectInputStream(bis);
+                msg = (Message) in.readObject();
+            }
+
+            catch(Exception E){
+                System.out.println("Error receiving message: " + E);
+            }
+
+            finally {
+                try {
+                    if (in != null) {
+                        in.close();
+                    }
+                } catch (Exception E){
+                    System.out.println("Error receiving message: NESTED: " + E);
+                }
+            }
+            return msg;
+    }
+
+    public boolean sendNickName(){
+        try{
+            Message m = new Message(nickName, "Michael", "GLOBAL");
+        } catch(Exception E) {
+            System.out.println("Error: Sending nickName  " + E);
+        }
+
+        //Receive Data.
+        try{
+            Message m = null;
+            ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
+            while(m == null) {
+                m = Message.ServerRecieve(sockChannel);
+            }
+
+            System.out.println(m.getMessage());
+
+            if(m.getMessage().equals("Successful")){
+                System.out.println("Connected to Server.");
+                return true;
+            } else {
+                System.out.println("Unable to connect to Server. Nickname is already in use.");
+            }
+        } catch(Exception E) {
+            System.out.println("Error: Receiving Nickname:  " + E);
+        }
         return false;
-      }
-    } catch(Exception E) {
-      System.out.println("Error: Receiving Nickname:  " + E);
     }
-    return false;
-  }
-
 }

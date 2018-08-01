@@ -10,6 +10,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.*;
 import java.lang.String;
+import Chat.Client;
 
 
 
@@ -29,40 +30,12 @@ public class Server {
   }
 
   /**
-  * TODO: finish
-  * Function that receivess global messages.
-  * This function receives a global message publicly from a user
-  * @param bytes byte array
-  * @throws IOException If something goes wrong with I/O
-  * */
-  private static Message receiveGlobalMessage(byte[] bytes) throws IOException, ClassNotFoundException {
-    ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-    ObjectInput in = null;
-    Message msg = null;
-
-    try {
-      in = new ObjectInputStream(bis);
-      msg = (Message) in.readObject();
-    } finally {
-      try {
-        if (in != null) {
-          in.close();
-        }
-      } catch (IOException ex){
-
-      }
-    }
-    return msg;
-  }
-
-
-
-  /**
   * Function that tests the uniqueness of a name.
   * @param name: The name to be tested.
   * @return true if name is not already in use on the server.
   * */
   private static Boolean isUniqueName(String name) {
+    //        System.out.println(name);
     return (nickNames.get(name) == null);
   }
 
@@ -70,7 +43,7 @@ public class Server {
   public static void main(String[] args) throws Throwable {
 
     Scanner sc = new Scanner(System.in);
-    nickNames.clear();
+
     // Setup the server connection
     // Selector is used to communicate with multiple channels.
     Selector selector = Selector.open();
@@ -115,23 +88,19 @@ public class Server {
           Message m1 = new Message("test", "Michael", "GLOBAL");
 
 
-          if(isUniqueName(m1.getSender())) {
-
             // TODO for testing, you can remove it when the map is populated
-            nickNames.put(m1.getSender(), client.getLocalAddress());
-
-
+          if(isUniqueName(m1.getSender())) {
             String msg = "Successful";
             Message m = new Message(msg, "Michael", "GLOBAL");
             m.ServerSend(client);
+
             //TODO: Test when have multiple clients.
             nickNames.put(m1.getSender(), client.getLocalAddress());
           } else {
             String msg = "Unsuccessful";
             Message m = new Message(msg, "Michael", "GLOBAL");
             m.ServerSend(client);
-            //                        client.close();
-            System.out.println(msg);
+//            client.close();
           }
 
           continue;
@@ -142,10 +111,9 @@ public class Server {
           SocketChannel client = (SocketChannel) key.channel();
 
           try{
-            Message msg = Message.ServerReceive(client);
-            System.out.println(msg.getMessage());
+            Message msg = Message.ServerRecieve(client);
             if(!msg.getMessage().isEmpty()) {
-              System.out.println(msg.getSender()+": " + msg.getMessage());
+              System.out.println(msg.getSender()+ ": "+ msg.getMessage());
             }
           } catch(Exception E) {
             System.out.println("ERROR Reading.");
