@@ -13,7 +13,6 @@ import java.util.Scanner;
 public class Client {
   private static String nickName = "Michael";
   private static InetSocketAddress addr;
-  private static SocketChannel client;
   private static SocketChannel sockChannel;
   private static int BUFFER_SIZE = 1024;
 
@@ -73,7 +72,7 @@ public class Client {
   public boolean sendNickName(){
     try{
       Message m = new Message(nickName, "Michael", "GLOBAL");
-      m.ClientSend(sockChannel);
+      m.ServerSend(sockChannel);
     } catch(Exception E) {
       System.out.println("Error: Sending nickName  " + E);
     }

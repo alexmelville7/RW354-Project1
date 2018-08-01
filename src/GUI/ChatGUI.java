@@ -43,7 +43,7 @@ public class ChatGUI {
 
         try {
           Message m = new Message("test", "Michael", "GLOBAL");
-          m.ClientSend(cli.getSockChannel());
+          m.ServerSend(cli.getSockChannel());
         } catch (Exception E) {
           E.printStackTrace();
         }
@@ -63,7 +63,7 @@ public class ChatGUI {
 
         try {
           Message m = new Message("test", "Michael", "GLOBAL");
-          m.ClientSend(cli.getSockChannel());
+          m.ServerSend(cli.getSockChannel());
         } catch (Exception E) {
           E.printStackTrace();
         }
