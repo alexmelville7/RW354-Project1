@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 
 public class Client {
-    private static String nickName = "Michael";
+    private static String nickName;
     private static InetSocketAddress addr;
     private static SocketChannel client;
     private static SocketChannel sockChannel;
@@ -83,7 +83,8 @@ public class Client {
 
     public boolean sendNickName(){
         try{
-            Message m = new Message(nickName, "Michael", "GLOBAL");
+            Message m = new Message("", nickName, "GLOBAL");
+            m.ServerSend(sockChannel);
         } catch(Exception E) {
             System.out.println("Error: Sending nickName  " + E);
         }
@@ -92,9 +93,7 @@ public class Client {
         try{
             Message m = null;
             ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
-            while(m == null) {
-                m = Message.ServerRecieve(sockChannel);
-            }
+            m = Message.ServerRecieve(sockChannel);
 
             System.out.println(m.getMessage());
 

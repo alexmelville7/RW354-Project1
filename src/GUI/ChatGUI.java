@@ -60,36 +60,19 @@ public class ChatGUI {
                 textField1.setText("");
             }
         });
-
+        Receive(cli.getSockChannel());
     }
 
     //Threaded method to recieve server posts.
     private void Receive(SocketChannel client){
         Thread t1 = new Thread(new Runnable() {
             public void run() {
-                ObjectInput in = null;
-                Message msg = null;
-                ByteBuffer buffer = ByteBuffer.allocate(1024);
+                while(true){
+                    Message m = null;
+                     m = Message.ServerRecieve(client);
+                    ChatArea.append(m.getMessage() + "\n");
+                }
 
-                try {
-                    client.read(buffer);
-                    ByteArrayInputStream bis = new ByteArrayInputStream(buffer.array());
-                    in = new ObjectInputStream(bis);
-                    msg = (Message) in.readObject();
-                    ChatArea.append(msg.getMessage() + "\n");
-                }
-                catch(Exception E){
-                    System.out.println("Receive Error: " + E);
-                }
-                finally {
-                    try {
-                        if (in != null) {
-                            in.close();
-                        }
-                    } catch (IOException ex){
-
-                    }
-                }
             }
         });
         t1.start();

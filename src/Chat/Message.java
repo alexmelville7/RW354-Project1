@@ -69,27 +69,28 @@ public class Message implements Serializable {
     public static Message ServerRecieve(SocketChannel sc){
         Message m = null;
         ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
-        int bytesRead = 0;
-        try{
-            bytesRead = sc.read(buffer);
+        while(m == null) {
+            int bytesRead = 0;
+            try {
+                bytesRead = sc.read(buffer);
 
-        } catch (Exception E){
-            System.out.println("Error - Server Receive - could not read from socketchannel - " + E);
-        }
-
-
-        try{
-            if(bytesRead > 0){
-                buffer.flip();
-                ByteArrayInputStream bais = new ByteArrayInputStream(buffer.array(), 0 , buffer.limit());
-                ObjectInputStream ois = new ObjectInputStream(bais);
-                m = (Message)ois.readObject();
-                ois.close();
+            } catch (Exception E) {
+                System.out.println("Error - Server Receive - could not read from socketchannel - " + E);
             }
-        } catch (Exception E){
-            System.out.println("Error - Server Receive - could not read from output stream - " + E);
-        }
 
+            try {
+                if (bytesRead > 0) {
+                    buffer.flip();
+                    ByteArrayInputStream bais = new ByteArrayInputStream(buffer.array(), 0, buffer.limit());
+                    ObjectInputStream ois = new ObjectInputStream(bais);
+                    m = (Message) ois.readObject();
+                    ois.close();
+                }
+            } catch (Exception E) {
+                System.out.println("Error - Server Receive - could not read from output stream - " + E);
+            }
+        }
+        buffer.clear();
         return m;
     }
 

@@ -85,20 +85,19 @@ public class Server {
           ByteBuffer buffer1 = ByteBuffer.allocate(BUFFER_SIZE);
           ByteBuffer buffer2 = ByteBuffer.allocate(BUFFER_SIZE);
 
-          Message m1 = new Message("test", "Michael", "GLOBAL");
 
+          Message m1 = Message.ServerRecieve(client);
+          System.out.println("Message Name: " + m1.getSender());
 
-            // TODO for testing, you can remove it when the map is populated
           if(isUniqueName(m1.getSender())) {
             String msg = "Successful";
-            Message m = new Message(msg, "Michael", "GLOBAL");
+            Message m = new Message(msg, m1.getSender(), "GLOBAL");
             m.ServerSend(client);
 
-            //TODO: Test when have multiple clients.
             nickNames.put(m1.getSender(), client.getLocalAddress());
           } else {
             String msg = "Unsuccessful";
-            Message m = new Message(msg, "Michael", "GLOBAL");
+            Message m = new Message(msg, m1.getSender(), "GLOBAL");
             m.ServerSend(client);
 //            client.close();
           }
@@ -122,12 +121,12 @@ public class Server {
         // If write able then server is ready to write.
         // This will be changed to a method that writes the data to another client.
         else if(key.isWritable()){
-          ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
-          System.out.print("Server: ");
-          SocketChannel client = (SocketChannel) key.channel();
-          String test = sc.nextLine();
-          Message msg = new Message(test, "Michael", "GLOBAL");
-          msg.ServerSend(client);
+//          ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
+//          System.out.print("Server: ");
+//          SocketChannel client = (SocketChannel) key.channel();
+          //String test = sc.nextLine();
+//          Message msg = new Message(test, "Michael", "GLOBAL");
+//          msg.ServerSend(client);
         }
       }
     }
