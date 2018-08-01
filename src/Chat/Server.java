@@ -2,6 +2,7 @@ package Chat;
 
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -16,8 +17,8 @@ import Chat.Client;
 
 public class Server {
 
-  private static Map<String, SocketAddress> nickNames = new HashMap<>();
-  private static Queue<Message> messages;
+  private static Map<String, SocketChannel> nickNames = new HashMap<>();
+  private static Queue<Message> messages = new LinkedList<Message>();
   private static int BUFFER_SIZE = 1024;
 
 
@@ -25,7 +26,7 @@ public class Server {
 
   }
 
-  public static Map<String, SocketAddress> getNickNames() {
+  public static Map<String, SocketChannel> getNickNames() {
     return nickNames;
   }
 
@@ -81,11 +82,6 @@ public class Server {
           // Register for read and write operations.
           client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
 
-          // Checking NickName
-          ByteBuffer buffer1 = ByteBuffer.allocate(BUFFER_SIZE);
-          ByteBuffer buffer2 = ByteBuffer.allocate(BUFFER_SIZE);
-
-
           Message m1 = Message.ServerRecieve(client);
           System.out.println("Message Name: " + m1.getSender());
 
@@ -94,12 +90,11 @@ public class Server {
             Message m = new Message(msg, m1.getSender(), "GLOBAL");
             m.ServerSend(client);
 
-            nickNames.put(m1.getSender(), client.getLocalAddress());
+            nickNames.put(m1.getSender(), client);
           } else {
             String msg = "Unsuccessful";
             Message m = new Message(msg, m1.getSender(), "GLOBAL");
             m.ServerSend(client);
-//            client.close();
           }
 
           continue;
@@ -111,6 +106,7 @@ public class Server {
 
           try{
             Message msg = Message.ServerRecieve(client);
+            messages.add(msg);
             if(!msg.getMessage().isEmpty()) {
               System.out.println(msg.getSender()+ ": "+ msg.getMessage());
             }
@@ -121,14 +117,24 @@ public class Server {
         // If write able then server is ready to write.
         // This will be changed to a method that writes the data to another client.
         else if(key.isWritable()){
-//          ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
-//          System.out.print("Server: ");
-//          SocketChannel client = (SocketChannel) key.channel();
-          //String test = sc.nextLine();
-//          Message msg = new Message(test, "Michael", "GLOBAL");
-//          msg.ServerSend(client);
+            if(!messages.isEmpty()){
+                Message msg  = messages.remove();
+                if(msg.getReceiver().equals("GLOBAL")){
+                    Iterator iter = nickNames.entrySet().iterator();
+                    while(iter.hasNext()){
+                        Map.Entry client = (Map.Entry)iter.next();
+                        SocketChannel cli = (SocketChannel) client.getValue();
+
+                        msg.ServerSend(cli);
+                        System.out.println("Progress.");
+                    }
+                } else {
+                    msg.ServerSend(nickNames.get(msg.getReceiver()));
+                }
+            }
         }
       }
     }
   }
-}
+  }
+

@@ -34,7 +34,7 @@ public class ChatGUI {
             public void actionPerformed(ActionEvent e) {
                 String message = textField1.getText();
                 System.out.println(message);
-                ChatArea.append(message + "\n");
+//                ChatArea.append(message + "\n");
                 try {
                     Message m = new Message(message, cli.getNickName(), "GLOBAL");
                     m.ClientSend(cli.getSockChannel());
@@ -50,7 +50,7 @@ public class ChatGUI {
             public void actionPerformed(ActionEvent e) {
                 String message = textField1.getText();
                 System.out.println(message);
-                ChatArea.append(message + "\n");
+//                ChatArea.append(message + "\n");
                 try {
                     Message m = new Message(message, cli.getNickName(), "GLOBAL");
                     m.ClientSend(cli.getSockChannel());
@@ -70,6 +70,7 @@ public class ChatGUI {
                 while(true){
                     Message m = null;
                      m = Message.ServerRecieve(client);
+                     System.out.println(m.getMessage());
                     ChatArea.append(m.getMessage() + "\n");
                 }
 
