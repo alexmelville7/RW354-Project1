@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.nio.channels.SocketChannel;
@@ -35,6 +37,12 @@ public class ChatGUI {
         Main.setBackground(Color.lightGray);
         ChatArea.append("You are connected..." + "\n");
         listModel = new DefaultListModel();
+        receive(cli);
+
+
+
+
+
 
         // Response if send button is pressed
         sendButton.addActionListener(new ActionListener() {
@@ -75,7 +83,23 @@ public class ChatGUI {
                 }
             }
         });
-        receive(cli);
+
+        // TODO make it so typed messages are now sent to whisper chat
+        // Response if user in list is double-clicked
+        UserList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                JList list = (JList)evt.getSource();
+                if (evt.getClickCount() == 2) {
+                    // Double-click detected
+                    int index = list.locationToIndex(evt.getPoint());
+                    JTextArea a = new JTextArea();
+                    tabbedPane1.addTab((String)list.getModel().getElementAt(index), a);
+                    a.append("Whisper chat with " + list.getModel().getElementAt(index));
+                }
+            }
+        });
+
+
     }
 
     private void receive(Client cli){

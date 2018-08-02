@@ -1,20 +1,15 @@
 package Chat;
-import GUI.ChatGUI;
 
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.Scanner;
 
 
 public class Client {
     private static String nickName;
     private static InetSocketAddress addr;
-    private static SocketChannel client;
     private static SocketChannel sockChannel;
-    private static SocketAddress address = new InetSocketAddress("localhost", 4444);
     private static int BUFFER_SIZE = 1024;
 
 
@@ -24,6 +19,15 @@ public class Client {
 
         // Initiating the socket Channel
         addr = new InetSocketAddress("localhost",4444);
+        sockChannel = SocketChannel.open(addr);
+        sockChannel.configureBlocking(false);
+    }
+
+    public Client(String nickName, String ip, int port)  throws IOException {
+        this.nickName = nickName;
+
+        // Initiating the socket Channel
+        addr = new InetSocketAddress(ip,port);
         sockChannel = SocketChannel.open(addr);
         sockChannel.configureBlocking(false);
     }

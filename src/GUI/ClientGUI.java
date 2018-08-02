@@ -15,29 +15,39 @@ public class ClientGUI {
     private JButton SendButton;
     private JTextField NameInput;
     private JPanel Main;
+    private JTextField PortInput;
+    private JTextField IPInput;
     private static JFrame frame;
 
     public ClientGUI() {
         SendButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent e) {
                 String nickname = NameInput.getText();
-                System.out.println(nickname);
-                try {
-                    Client cli = new Client(nickname);
-                    if (cli.sendNickName()) {
-                        JFrame frame2 = new JFrame("Chat.ChatGUI" );
-                        frame2.setContentPane(new ChatGUI(cli).Main);
-                        frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                        frame2.pack();
-                        frame2.setVisible(true);
-                        frame.setVisible(false);
-                    } else {
-                        // TODO print error message in the GUI
+                String ip = IPInput.getText();
+                int port = Integer.parseInt(PortInput.getText());
 
+                if (nickname.contains(",")) {
+                    // TODO print error in GUI
+
+                } else {
+                    System.out.println(nickname);
+                    try {
+                        Client cli = new Client(nickname, ip,port);
+                        if (cli.sendNickName()) {
+                            JFrame frame2 = new JFrame("Chat.ChatGUI");
+                            frame2.setContentPane(new ChatGUI(cli).Main);
+                            frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                            frame2.pack();
+                            frame2.setVisible(true);
+                            frame.setVisible(false);
+                        } else {
+                            // TODO print error message in the GUI
+
+                        }
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
                     }
-                } catch (IOException e1) {
-                    e1.printStackTrace();
                 }
             }
         });
