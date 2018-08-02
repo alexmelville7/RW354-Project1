@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.nio.channels.SocketChannel;
+import java.util.*;
 
 public class ChatGUI {
 
@@ -21,19 +22,19 @@ public class ChatGUI {
     private JTabbedPane tabbedPane1;
     private JScrollBar scrollBar1;
     private JLabel WelcomeLabel;
-    private Client client;
+    private Client cli;
     private DefaultListModel listModel;
+    public JList lstContacts;
     DateFormat format = new SimpleDateFormat("HH:mm");
 
     public ChatGUI(Client cli) {
-        //Receive(cli.getSockChannel());
-        client = cli;
-        WelcomeLabel.setText(WelcomeLabel.getText() + client.getNickName());
+        this.cli = cli;
+//
+        listModel = new DefaultListModel();
+        WelcomeLabel.setText(WelcomeLabel.getText() + cli.getNickName());
         Main.setBackground(Color.lightGray);
         ChatArea.append("You are connected..." + "\n");
         listModel = new DefaultListModel();
-        UserList = new JList(listModel);
-
 
         // Response if send button is pressed
         sendButton.addActionListener(new ActionListener() {
@@ -44,7 +45,7 @@ public class ChatGUI {
 
                 if (!message.isEmpty()) {
                     try {
-                        Message m = new Message(message, client.getNickName(), "GLOBAL");
+                        Message m = new Message(message, cli.getNickName(), "GLOBAL");
                         ChatArea.append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
                         m.ClientSend(cli.getSockChannel());
                     } catch (Exception E) {
@@ -64,7 +65,7 @@ public class ChatGUI {
 
                 if (!message.isEmpty()) {
                     try {
-                        Message m = new Message(message, client.getNickName(), "GLOBAL");
+                        Message m = new Message(message, cli.getNickName(), "GLOBAL");
                         ChatArea.append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
                         m.ClientSend(cli.getSockChannel());
                     } catch (Exception E) {
@@ -74,15 +75,11 @@ public class ChatGUI {
                 }
             }
         });
-        receive(client.getSockChannel());
+        receive(cli);
     }
 
-    /**
-     * Threaded method to receive server messages
-     * @param client - the socket channel that messages are being received from
-     */
-    private void receive(SocketChannel client){
-
+    private void receive(Client cli){
+        SocketChannel client = cli.getSockChannel();
         Thread t1 = new Thread(new Runnable() {
             public void run() {
                 while(true){
@@ -92,15 +89,24 @@ public class ChatGUI {
                     if (m.getMessageType().equals("MESSAGE")) {
                         ChatArea.append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
                     } else if (m.getMessageType().equals("USER_ADD")) {
-                        // TODO test
                         listModel.addElement(m.getMessage());
-                    } else if (m.getMessageType().equals("USER_REM")) {
+                        UserList.setListData(listModel.toArray());
+                    } else if (m.getMessageType().equals("USER_ADD_LIST")) {
+                        String str = m.getMessage();
+                        str = str.substring(1, str.length()-1);
+                        String tokens[] = str.split(",");
+
+                        for(int i = 0; i < tokens.length; i++) {
+                            listModel.addElement(tokens[i]);
+                        }
+                        UserList.setListData(listModel.toArray());
+                    }
+                    else if (m.getMessageType().equals("USER_REM")) {
                         // TODO test
                         listModel.remove(listModel.indexOf(m.getMessage()));
+                        UserList.setListData(listModel.toArray());
                     }
-
                 }
-
             }
         });
         t1.start();

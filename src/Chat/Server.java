@@ -89,8 +89,12 @@ public class Server {
                         String msg = "Successful";
                         Message m = new Message(msg, m1.getSender(), "GLOBAL");
                         m.ServerSend(client);
-
+                        m = new Message(m1.getSender(), "USER_ADD");
+                        GlobalSend(m);
+                        m = new Message(nickNames.keySet().toString(), "USER_ADD_LIST");
+                        m.ServerSend(client);
                         nickNames.put(m1.getSender(), client);
+
                     } else {
                         String msg = "Unsuccessful";
                         Message m = new Message(msg, m1.getSender(), "GLOBAL");
@@ -120,20 +124,25 @@ public class Server {
                     if(!messages.isEmpty()){
                         Message msg  = messages.remove();
                         if(msg.getReceiver().equals("GLOBAL")){
-                            Iterator iter = nickNames.entrySet().iterator();
-                            while(iter.hasNext()){
-                                Map.Entry client = (Map.Entry)iter.next();
-
-                                if (!client.getKey().equals(msg.getSender())) {
-                                    SocketChannel cli = (SocketChannel) client.getValue();
-                                    msg.ServerSend(cli);
-                                }
-                            }
-                        } else {
+                            GlobalSend(msg);
+                        }
+                        else {
                             msg.ServerSend(nickNames.get(msg.getReceiver()));
                         }
                     }
                 }
+            }
+        }
+    }
+
+    public static void GlobalSend(Message msg){
+        Iterator iter = nickNames.entrySet().iterator();
+        while(iter.hasNext()) {
+            Map.Entry client = (Map.Entry) iter.next();
+
+            if (!client.getKey().equals(msg.getSender())) {
+                SocketChannel cli = (SocketChannel) client.getValue();
+                msg.ServerSend(cli);
             }
         }
     }

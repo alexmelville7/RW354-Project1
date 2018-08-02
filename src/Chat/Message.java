@@ -2,10 +2,13 @@ package Chat;
 
 import org.omg.CORBA.portable.InputStream;
 
+import javax.swing.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Message implements Serializable {
 
@@ -27,6 +30,7 @@ public class Message implements Serializable {
         this.messageType = "MESSAGE";
     }
 
+    //Used to update list of old users.
     public Message(String user, String type) {
         this.message = user;
         this.receiver = null;
@@ -34,9 +38,7 @@ public class Message implements Serializable {
         this.date = new Date();
         this.messageType = type;
     }
-
-
-    /******************************************** Communication Functions ********************************************/
+/******************************************** Communication Functions ********************************************/
 
     /**
      * Function that is used by the server to send a message

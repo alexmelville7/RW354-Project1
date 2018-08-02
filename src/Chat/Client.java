@@ -18,18 +18,6 @@ public class Client {
     private static int BUFFER_SIZE = 1024;
 
 
-    //Main Method
-    // TODO: Ask for nickname.
-    // TODO: Send to server to test for uniqueness. Cannot proceed to messaging until unique.
-    // TODO: Once at the messaging stage we need to take message string and send it a message object.
-    public static void main(String[] args) throws IOException {
-
-        //Send(client);
-//        Receive(client);
-        //If you close the client now, the client will instantly close because it's a thread.
-        //client.close();
-    }
-
     //Constructor
     public Client(String nickName)  throws IOException {
         this.nickName = nickName;
@@ -47,38 +35,6 @@ public class Client {
     //Getters and Setters
     public static String getNickName() {
         return nickName;
-    }
-
-    /**
-     * TODO: finish
-     * Function that receives global messages.
-     * This function receives a global message publicly from everyone
-     * @throws IOException
-     * */
-    private Message receiveGlobalMessage(SocketChannel sc, byte[] bytes) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-        ObjectInput in = null;
-        Message msg = null;
-
-        try {
-            in = new ObjectInputStream(bis);
-            msg = (Message) in.readObject();
-        }
-
-        catch(Exception E){
-            System.out.println("Error receiving message: " + E);
-        }
-
-        finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (Exception E){
-                System.out.println("Error receiving message: NESTED: " + E);
-            }
-        }
-        return msg;
     }
 
     public boolean sendNickName(){

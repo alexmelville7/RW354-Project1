@@ -5,6 +5,7 @@ import Chat.Message;
 import Chat.Client;
 import Chat.Server;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class ClientGUI {
                 System.out.println(nickname);
                 try {
                     Client cli = new Client(nickname);
-                    if (cli.sendNickName() == true) {
+                    if (cli.sendNickName()) {
                         JFrame frame2 = new JFrame("Chat.ChatGUI" );
                         frame2.setContentPane(new ChatGUI(cli).Main);
                         frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -48,7 +49,7 @@ public class ClientGUI {
                 System.out.println(nickname);
                 try {
                     Client cli = new Client(nickname);
-                    if (cli.sendNickName() == true) {
+                    if (cli.sendNickName()) {
                         JFrame frame2 = new JFrame("Chat.ChatGUI" );
                         frame2.setContentPane(new ChatGUI(cli).Main);
                         frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
