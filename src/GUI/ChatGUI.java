@@ -2,7 +2,7 @@ package GUI;
 
 import Chat.Client;
 import Chat.Message;
-import apple.laf.JRSUIUtils;
+//import apple.laf.JRSUIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,32 +25,27 @@ public class ChatGUI {
     private JTabbedPane tabbedPane1;
     private JScrollBar scrollBar1;
     private JLabel WelcomeLabel;
+    private JButton disconnectButton;
     private Client cli;
-    private DefaultListModel listModel;
     public JList lstContacts;
-    DateFormat format = new SimpleDateFormat("HH:mm");
     private int chatIndex = 0;
+    private DefaultListModel listModel;
     private LinkedList<String> names = new LinkedList<>();
     private LinkedList<JTextArea> chats = new LinkedList<>();
+    private DateFormat format = new SimpleDateFormat("HH:mm");
 
-    public ChatGUI(Client cli) {
+    public ChatGUI(Client cli, JFrame frame) {
 
         names.push("GLOBAL");
         tabbedPane1.setName("GLOBAL");
         chats.push(ChatArea);
         this.cli = cli;
-//
+
+        ChatArea.append("You are connected..." + "\n");
         listModel = new DefaultListModel();
         WelcomeLabel.setText(WelcomeLabel.getText() + cli.getNickName());
         Main.setBackground(Color.lightGray);
-        ChatArea.append("You are connected..." + "\n");
-        listModel = new DefaultListModel();
         receive(cli);
-
-
-
-
-
 
         // Response if send button is pressed
         sendButton.addActionListener(new ActionListener() {
@@ -121,21 +116,31 @@ public class ChatGUI {
                 }
             }
         });
+
+
+        disconnectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO
+//                Message msg = new Message(cli.getNickName(), "DISCONN");
+//                msg.ClientSend(cli.getSockChannel());
+
+            }
+        });
     }
 
     private void receive(Client cli){
         SocketChannel client = cli.getSockChannel();
         Thread t1 = new Thread(new Runnable() {
             public void run() {
-                while(true){
+                while(true) {
                     Message m = null;
                     m = Message.ServerRecieve(client);
 
                     if (m.getMessageType().equals("MESSAGE")) {
-                        if(m.getReceiver().equals("GLOBAL")){
+                        if (m.getReceiver().equals("GLOBAL")) {
                             ChatArea.append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
-                        }
-                        else if(names.contains(m.getSender())){
+                        } else if (names.contains(m.getSender())) {
                             chats.get(names.indexOf(m.getSender())).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
                         } else {
                             JTextArea a = new JTextArea();
@@ -154,12 +159,11 @@ public class ChatGUI {
                         str = str.substring(1, str.length()-1);
                         String tokens[] = str.split(",");
 
-                        for(int i = 0; i < tokens.length; i++) {
+                        for (int i = 0; i < tokens.length; i++) {
                             listModel.addElement(tokens[i]);
                         }
                         UserList.setListData(listModel.toArray());
-                    }
-                    else if (m.getMessageType().equals("USER_REM")) {
+                    } else if (m.getMessageType().equals("USER_REM")) {
                         // TODO test
                         listModel.remove(listModel.indexOf(m.getMessage()));
                         UserList.setListData(listModel.toArray());

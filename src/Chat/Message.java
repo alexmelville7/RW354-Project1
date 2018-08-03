@@ -33,12 +33,13 @@ public class Message implements Serializable {
     //Used to update list of old users.
     public Message(String user, String type) {
         this.message = user;
-        this.receiver = null;
-        this.sender = null;
+        this.receiver = " ";
+        this.sender = " ";
         this.date = new Date();
         this.messageType = type;
     }
-/******************************************** Communication Functions ********************************************/
+
+    /******************************************** Communication Functions ********************************************/
 
     /**
      * Function that is used by the server to send a message

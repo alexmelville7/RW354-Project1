@@ -43,8 +43,6 @@ public class Server {
 
     public static void main(String[] args) throws Throwable {
 
-        Scanner sc = new Scanner(System.in);
-
         // Setup the server connection
         // Selector is used to communicate with multiple channels.
         Selector selector = Selector.open();
@@ -114,6 +112,14 @@ public class Server {
                         if(!msg.getMessage().isEmpty()) {
                             System.out.println(msg.getSender()+ ": "+ msg.getMessage());
                         }
+
+                        // TODO disconnect
+                        if(!msg.getMessageType().equals("DISCONN")) {
+                            System.out.println(msg.getMessage()+ " disconnected");
+                            key.cancel();
+                            key.channel().close();
+                        }
+
                     } catch(Exception E) {
                         System.out.println("ERROR Reading.");
                     }
@@ -123,7 +129,7 @@ public class Server {
                 else if(key.isWritable()){
                     if(!messages.isEmpty()){
                         Message msg  = messages.remove();
-                        if(msg.getReceiver().equals("GLOBAL")){
+                        if(msg.getReceiver()!= null && msg.getReceiver().equals("GLOBAL")){
                             GlobalSend(msg);
                         }
                         else {

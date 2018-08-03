@@ -13,7 +13,8 @@ public class Client {
     private static int BUFFER_SIZE = 1024;
 
 
-    //Constructor
+    /******************************************** Constructors ********************************************/
+
     public Client(String nickName)  throws IOException {
         this.nickName = nickName;
 
@@ -32,15 +33,14 @@ public class Client {
         sockChannel.configureBlocking(false);
     }
 
-    public SocketChannel getSockChannel() {
-        return sockChannel;
-    }
 
-    //Getters and Setters
-    public static String getNickName() {
-        return nickName;
-    }
+    /******************************************** Communication Functions ********************************************/
 
+    /**
+     * Function that sends nickname to server for authentication
+     *
+     * @return true if nickname is valid and authenticated by server
+     * */
     public boolean sendNickName(){
         try{
             Message m = new Message("", nickName, "GLOBAL");
@@ -68,4 +68,15 @@ public class Client {
         }
         return false;
     }
+
+    /******************************************** Getters and Setters ********************************************/
+
+    public SocketChannel getSockChannel() {
+        return sockChannel;
+    }
+
+    public static String getNickName() {
+        return nickName;
+    }
+
 }
