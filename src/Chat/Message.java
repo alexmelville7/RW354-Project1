@@ -67,6 +67,8 @@ public class Message implements Serializable {
             System.out.println("Error - Server Send - could not parse object - " + E);
             return;
         }
+
+        buffer.clear();
     }
 
     /**

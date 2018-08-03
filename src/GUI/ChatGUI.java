@@ -2,6 +2,7 @@ package GUI;
 
 import Chat.Client;
 import Chat.Message;
+import apple.laf.JRSUIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,8 +29,15 @@ public class ChatGUI {
     private DefaultListModel listModel;
     public JList lstContacts;
     DateFormat format = new SimpleDateFormat("HH:mm");
+    private int chatIndex = 0;
+    private LinkedList<String> names = new LinkedList<>();
+    private LinkedList<JTextArea> chats = new LinkedList<>();
 
     public ChatGUI(Client cli) {
+
+        names.push("GLOBAL");
+        tabbedPane1.setName("GLOBAL");
+        chats.push(ChatArea);
         this.cli = cli;
 //
         listModel = new DefaultListModel();
@@ -53,8 +61,8 @@ public class ChatGUI {
 
                 if (!message.isEmpty()) {
                     try {
-                        Message m = new Message(message, cli.getNickName(), "GLOBAL");
-                        ChatArea.append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
+                        Message m = new Message(message, cli.getNickName(), tabbedPane1.getName());
+                        chats.get(chatIndex).append("whisper" + m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
                         m.ClientSend(cli.getSockChannel());
                     } catch (Exception E) {
                         E.printStackTrace();
@@ -73,8 +81,8 @@ public class ChatGUI {
 
                 if (!message.isEmpty()) {
                     try {
-                        Message m = new Message(message, cli.getNickName(), "GLOBAL");
-                        ChatArea.append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
+                        Message m = new Message(message, cli.getNickName(), tabbedPane1.getName());
+                        chats.get(chatIndex).append("whisper" + m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
                         m.ClientSend(cli.getSockChannel());
                     } catch (Exception E) {
                         E.printStackTrace();
@@ -93,13 +101,26 @@ public class ChatGUI {
                     // Double-click detected
                     int index = list.locationToIndex(evt.getPoint());
                     JTextArea a = new JTextArea();
-                    tabbedPane1.addTab((String)list.getModel().getElementAt(index), a);
-                    a.append("Whisper chat with " + list.getModel().getElementAt(index));
+                    String name = (String)list.getModel().getElementAt(index);
+                    tabbedPane1.addTab(name, a);
+                    names.add(name);
+                    a.append("Whisper chat with " + list.getModel().getElementAt(index) + "\n");
+                    chats.add(a);
                 }
             }
         });
 
 
+        tabbedPane1.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                JTabbedPane list = (JTabbedPane) evt.getSource();
+                if (evt.getClickCount() == 1) {
+                    // Double-click detected
+                    chatIndex = list.getSelectedIndex();
+                    tabbedPane1.setName(names.get(chatIndex));
+                }
+            }
+        });
     }
 
     private void receive(Client cli){
@@ -111,7 +132,20 @@ public class ChatGUI {
                     m = Message.ServerRecieve(client);
 
                     if (m.getMessageType().equals("MESSAGE")) {
-                        ChatArea.append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
+                        if(m.getReceiver().equals("GLOBAL")){
+                            ChatArea.append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
+                        }
+                        else if(names.contains(m.getSender())){
+                            chats.get(names.indexOf(m.getSender())).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
+                        } else {
+                            JTextArea a = new JTextArea();
+                            String name = m.getSender();
+                            tabbedPane1.addTab(name, a);
+                            names.add(name);
+                            a.append("Whisper chat with " + m.getSender()+ "\n");
+                            a.append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
+                            chats.add(a);
+                        }
                     } else if (m.getMessageType().equals("USER_ADD")) {
                         listModel.addElement(m.getMessage());
                         UserList.setListData(listModel.toArray());

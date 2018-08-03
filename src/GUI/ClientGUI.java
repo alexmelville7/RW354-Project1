@@ -33,7 +33,7 @@ public class ClientGUI {
                 } else {
                     System.out.println(nickname);
                     try {
-                        Client cli = new Client(nickname, ip,port);
+                        Client cli = new Client(nickname/*, ip,port*/);
                         if (cli.sendNickName()) {
                             JFrame frame2 = new JFrame("Chat.ChatGUI");
                             frame2.setContentPane(new ChatGUI(cli).Main);
