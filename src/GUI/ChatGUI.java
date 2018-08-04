@@ -60,7 +60,7 @@ public class ChatGUI {
                             try {
                                 Message m = new Message(message, cli.getNickName(), names.get(tabbedPane1.getSelectedIndex()));
                                 chats.get(chatIndex).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
-                                m.ClientSend(cli.getSockChannel());
+                                m.ClientSend(cli.getSockChannel(), frame, frame2);
                             } catch (Exception E) {
                                 E.printStackTrace();
                             }
@@ -85,7 +85,7 @@ public class ChatGUI {
                             try {
                                 Message m = new Message(message, cli.getNickName(), names.get(tabbedPane1.getSelectedIndex()));
                                 chats.get(chatIndex).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
-                                m.ClientSend(cli.getSockChannel());
+                                m.ClientSend(cli.getSockChannel(), frame, frame2);
                             } catch (Exception E) {
                                 E.printStackTrace();
                             }
@@ -131,7 +131,7 @@ public class ChatGUI {
                 // TODO
                 System.out.println("Disconnect");
                 Message msg = new Message(cli.getNickName(), "DISCONN");
-                msg.ClientSend(cli.getSockChannel());
+                msg.ClientSend(cli.getSockChannel(), frame, frame2);
                 frame.setVisible(true);
                 frame2.setVisible(false);
                 frame2.dispose();
@@ -189,7 +189,10 @@ public class ChatGUI {
                         String tokens[] = str.split(",");
 
                         for (int i = 0; i < tokens.length; i++) {
-                            users.add(tokens[i].trim());
+                            if(!cli.getNickName().equals(tokens[i].trim())){
+                                users.add(tokens[i].trim());
+
+                            }
                         }
                         UserList.setListData(users.toArray());
                     } else if (m.getMessageType().equals("DISCONN") && !m.getMessage().equals(cli.getNickName())) {
@@ -206,6 +209,9 @@ public class ChatGUI {
                             chats.remove(chats.get(names.indexOf(m.getMessage())));
                         }
 
+                    } else {
+                        Message m2 = new Message(cli.getNickName(), "USER__ADD_LIST");
+                        m2.ServerSend(cli.getSockChannel());
                     }
                 }
             }

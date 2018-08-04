@@ -1,10 +1,6 @@
 package Chat;
 
-import java.io.*;
 import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -12,13 +8,10 @@ import java.nio.channels.SocketChannel;
 import java.util.*;
 import java.lang.String;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.Lock;
 
-import Chat.Client;
 
-import javax.swing.*;
 
 
 public class Server {
@@ -174,17 +167,11 @@ public class Server {
                     key.cancel();
                     key.channel().close();
                     nickNames.remove(msg.getMessage());
+                    nickLocks.remove(msg.getMessage());
                 } else {
                     messages.add(msg);
                 }
             }
-            // TODO disconnect
-            /*if(!msg.getMessageType().equals("DISCONN")) {
-                System.out.println(msg.getMessage()+ " disconnected");
-                key.cancel();
-                key.channel().close();
-            }*/
-
         } catch(Exception E) {
             System.out.println("ERROR Reading.");
         }

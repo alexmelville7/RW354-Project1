@@ -35,21 +35,21 @@ public class ClientGUI {
                 }
 
                 try {
-                        Client cli = new Client(nickname, ip,port);
-                        if (Protocol.isNickName(cli.getNickName(), Warnings) && cli.sendNickName()) {
-                            JFrame frame2 = new JFrame("Chat.ChatGUI");
-                            frame2.setContentPane(new ChatGUI(cli,frame, frame2).Main);
-                            frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                            frame2.pack();
-                            frame2.setVisible(true);
-                            frame.setVisible(false);
-                        } else {
-                            // TODO print error message in the GUI
+                    Client cli = new Client(nickname, ip,port);
+                    if (Protocol.isNickName(cli.getNickName(), Warnings) && cli.sendNickName()) {
+                        JFrame frame2 = new JFrame("Chat.ChatGUI");
+                        frame2.setContentPane(new ChatGUI(cli,frame, frame2).Main);
+                        frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        frame2.pack();
+                        frame2.setVisible(true);
+                        frame.setVisible(false);
+                    } else {
+                        // TODO print error message in the GUI
 //                            Warnings.setText("Nickname must be unique.");
-                        }
+                    }
                 } catch (IOException e1) {
-                        // TODO print error message in GUI
-                        Warnings.setText("There was a connection error. Make sure IP and Port are correct");
+                    // TODO print error message in GUI
+                    Warnings.setText("There was a connection error. Make sure IP and Port are correct");
                 }
 
             }

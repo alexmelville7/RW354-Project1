@@ -106,7 +106,7 @@ public class Message implements Serializable {
      * Function that is used by the client to send a message
      * @param sc - The socket channel that message is sent on
      * */
-    public void ClientSend(SocketChannel sc){
+    public void ClientSend(SocketChannel sc, JFrame frame, JFrame frame2){
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = null;
         try {
@@ -120,7 +120,9 @@ public class Message implements Serializable {
             buffer.clear();
         } catch(Exception E) {
             System.out.println("ERROR: Sending Client side - " + E);
-
+            /*frame.setVisible(true);
+            frame2.setVisible(false);
+            frame2.dispose();*/
         }
         finally
         {
