@@ -26,9 +26,4 @@ public class Protocol {
         }
         return true;
     }
-
-
-
-
-
 }

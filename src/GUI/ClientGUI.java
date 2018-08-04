@@ -24,8 +24,7 @@ public class ClientGUI {
             public void actionPerformed(ActionEvent e) {
                 String nickname = NameInput.getText();
                 String ip = IPInput.getText();
-
-                int port= 0;
+                    int port = 0;
                 // Check that port string is not empty
                 if (!PortInput.getText().isEmpty()) {
                     port = Integer.parseInt(PortInput.getText());
@@ -35,21 +34,23 @@ public class ClientGUI {
                 }
 
                 try {
-                    Client cli = new Client(nickname, ip,port);
-                    if (Protocol.isNickName(cli.getNickName(), Warnings) && cli.sendNickName()) {
-                        JFrame frame2 = new JFrame("Chat.ChatGUI");
-                        frame2.setContentPane(new ChatGUI(cli,frame, frame2).Main);
-                        frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                        frame2.pack();
-                        frame2.setVisible(true);
-                        frame.setVisible(false);
-                    } else {
-                        // TODO print error message in the GUI
-//                            Warnings.setText("Nickname must be unique.");
-                    }
+                        Client cli = new Client(nickname, ip,port);
+                        if (Protocol.isNickName(cli.getNickName(), Warnings) && cli.sendNickName()) {
+                            JFrame frame2 = new JFrame("Chat.ChatGUI");
+                            frame2.setContentPane(new ChatGUI(cli,frame, frame2).Main);
+                            frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                            frame2.pack();
+                            frame2.setVisible(true);
+                            frame.setVisible(false);
+                        } else {
+                            // TODO print error message in the GUI
+                            Warnings.setText("Nickname must be unique.");
+                        }
                 } catch (IOException e1) {
-                    // TODO print error message in GUI
-                    Warnings.setText("There was a connection error. Make sure IP and Port are correct");
+                        // TODO print error message in GUI
+                        Warnings.setText("There was a connection error. Make sure IP and Port are correct");
+                        e1.printStackTrace();
+
                 }
 
             }
@@ -60,18 +61,17 @@ public class ClientGUI {
             public void actionPerformed(ActionEvent e) {
                 String nickname = NameInput.getText();
                 String ip = IPInput.getText();
-
-                int port= 0;
+                int port = 0;
                 // Check that port string is not empty
                 if (!PortInput.getText().isEmpty()) {
                     port = Integer.parseInt(PortInput.getText());
                 } else{
                     // TODO print error message
-                    Warnings.setText("Port field cannot be empty");
                 }
 
+                System.out.println(nickname);
                 try {
-                    Client cli = new Client(nickname, ip,port);
+                    Client cli = new Client(nickname, ip, port);
                     if (Protocol.isNickName(cli.getNickName(), Warnings) && cli.sendNickName()) {
                         JFrame frame2 = new JFrame("Chat.ChatGUI");
                         frame2.setContentPane(new ChatGUI(cli,frame, frame2).Main);
@@ -81,16 +81,15 @@ public class ClientGUI {
                         frame.setVisible(false);
                     } else {
                         // TODO print error message in the GUI
-//                            Warnings.setText("Nickname must be unique.");
+
                     }
                 } catch (IOException e1) {
-                    // TODO print error message in GUI
-                    Warnings.setText("There was a connection error. Make sure IP and Port are correct");
+                    e1.printStackTrace();
                 }
-
             }
         });
     }
+
 
 
 
@@ -101,4 +100,5 @@ public class ClientGUI {
         frame.pack();
         frame.setVisible(true);
     }
+
 }
