@@ -2,6 +2,7 @@ package GUI;
 
 import Chat.Client;
 import Chat.Message;
+import Chat.Protocol;
 //import apple.laf.JRSUIUtils;
 
 import javax.swing.*;
@@ -31,14 +32,15 @@ public class ChatGUI {
     private int chatIndex = 0;
     private DefaultListModel listModel;
     private LinkedList<String> names = new LinkedList<>();
+    private LinkedList<String> users = new LinkedList<>();
     private LinkedList<JTextArea> chats = new LinkedList<>();
     private DateFormat format = new SimpleDateFormat("HH:mm");
 
     public ChatGUI(Client cli, JFrame frame) {
 
-        names.push("GLOBAL");
+        names.add("GLOBAL");
         tabbedPane1.setName("GLOBAL");
-        chats.push(ChatArea);
+        chats.add(ChatArea);
         this.cli = cli;
 
         ChatArea.append("You are connected..." + "\n");
@@ -56,8 +58,8 @@ public class ChatGUI {
 
                 if (!message.isEmpty()) {
                     try {
-                        Message m = new Message(message, cli.getNickName(), tabbedPane1.getName());
-                        chats.get(chatIndex).append("whisper" + m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
+                        Message m = new Message(message, cli.getNickName(), names.get(tabbedPane1.getSelectedIndex()));
+                        chats.get(chatIndex).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
                         m.ClientSend(cli.getSockChannel());
                     } catch (Exception E) {
                         E.printStackTrace();
@@ -76,13 +78,25 @@ public class ChatGUI {
 
                 if (!message.isEmpty()) {
                     try {
-                        Message m = new Message(message, cli.getNickName(), tabbedPane1.getName());
-                        chats.get(chatIndex).append("whisper" + m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
+                        Message m = new Message(message, cli.getNickName(), names.get(tabbedPane1.getSelectedIndex()));
+                        chats.get(chatIndex).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
                         m.ClientSend(cli.getSockChannel());
                     } catch (Exception E) {
+                        System.out.println("Error Sending message - ChatGUI - " + E);
                         E.printStackTrace();
                     }
                     textField1.setText("");
+                }
+            }
+        });
+
+
+        tabbedPane1.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                JTabbedPane list = (JTabbedPane) evt.getSource();
+                if (evt.getClickCount() == 1) {
+                    // Double-click detected
+                    chatIndex = list.getSelectedIndex();
                 }
             }
         });
@@ -101,18 +115,6 @@ public class ChatGUI {
                     names.add(name);
                     a.append("Whisper chat with " + list.getModel().getElementAt(index) + "\n");
                     chats.add(a);
-                }
-            }
-        });
-
-
-        tabbedPane1.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent evt) {
-                JTabbedPane list = (JTabbedPane) evt.getSource();
-                if (evt.getClickCount() == 1) {
-                    // Double-click detected
-                    chatIndex = list.getSelectedIndex();
-                    tabbedPane1.setName(names.get(chatIndex));
                 }
             }
         });
@@ -139,7 +141,7 @@ public class ChatGUI {
 
                     if (m.getMessageType().equals("MESSAGE")) {
                         if (m.getReceiver().equals("GLOBAL")) {
-                            ChatArea.append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
+                            chats.get(tabbedPane1.getSelectedIndex()).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
                         } else if (names.contains(m.getSender())) {
                             chats.get(names.indexOf(m.getSender())).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
                         } else {
@@ -152,17 +154,19 @@ public class ChatGUI {
                             chats.add(a);
                         }
                     } else if (m.getMessageType().equals("USER_ADD")) {
-                        listModel.addElement(m.getMessage());
-                        UserList.setListData(listModel.toArray());
+                        users.add(m.getMessage());
+                        UserList.setListData(users.toArray());
                     } else if (m.getMessageType().equals("USER_ADD_LIST")) {
                         String str = m.getMessage();
+                        System.out.println("Userlist Received: " + Protocol.isReceived(str, cli));
+
                         str = str.substring(1, str.length()-1);
                         String tokens[] = str.split(",");
 
                         for (int i = 0; i < tokens.length; i++) {
-                            listModel.addElement(tokens[i]);
+                            users.add(tokens[i].trim());
                         }
-                        UserList.setListData(listModel.toArray());
+                        UserList.setListData(users.toArray());
                     } else if (m.getMessageType().equals("USER_REM")) {
                         // TODO test
                         listModel.remove(listModel.indexOf(m.getMessage()));

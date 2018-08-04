@@ -108,17 +108,18 @@ public class Server {
 
                     try{
                         Message msg = Message.ServerRecieve(client);
-                        messages.add(msg);
-                        if(!msg.getMessage().isEmpty()) {
-                            System.out.println(msg.getSender()+ ": "+ msg.getMessage());
+                        if(msg.getMessage() == null && msg.getMessageType().equals("USER_ADD_LIST")){
+                            Message m = new Message(nickNames.keySet().toString(), "USER_ADD_LIST");
+                        } else {
+                            messages.add(msg);
                         }
 
                         // TODO disconnect
-                        if(!msg.getMessageType().equals("DISCONN")) {
-                            System.out.println(msg.getMessage()+ " disconnected");
-                            key.cancel();
-                            key.channel().close();
-                        }
+//                        if(!msg.getMessageType().equals("DISCONN")) {
+//                            System.out.println(msg.getMessage()+ " disconnected");
+//                            key.cancel();
+//                            key.channel().close();
+//                        }
 
                     } catch(Exception E) {
                         System.out.println("ERROR Reading.");
@@ -129,7 +130,7 @@ public class Server {
                 else if(key.isWritable()){
                     if(!messages.isEmpty()){
                         Message msg  = messages.remove();
-                        if(msg.getReceiver()!= null && msg.getReceiver().equals("GLOBAL")){
+                        if(msg.getReceiver().equals("GLOBAL")){
                             GlobalSend(msg);
                         }
                         else {

@@ -1,6 +1,8 @@
 package GUI;
 
 import Chat.Client;
+import Chat.Protocol;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,13 +33,9 @@ public class ClientGUI {
                     Warnings.setText("Port field cannot be empty");
                 }
 
-                if (nickname.contains(",")) {
-                    // TODO print error in GUI
-                    Warnings.setText("Nickname cannot have ',' in it.");
-                } else {
-                    try {
+                try {
                         Client cli = new Client(nickname/*, ip,port*/);
-                        if (cli.sendNickName()) {
+                        if (Protocol.isNickName(cli.getNickName(), Warnings) && cli.sendNickName()) {
                             JFrame frame2 = new JFrame("Chat.ChatGUI");
                             frame2.setContentPane(new ChatGUI(cli,frame2).Main);
                             frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -48,13 +46,13 @@ public class ClientGUI {
                             // TODO print error message in the GUI
                             Warnings.setText("Nickname must be unique.");
                         }
-                    } catch (IOException e1) {
+                } catch (IOException e1) {
                         // TODO print error message in GUI
                         Warnings.setText("There was a connection error. Make sure IP and Port are correct");
                         e1.printStackTrace();
 
-                    }
                 }
+
             }
         });
 
@@ -71,29 +69,22 @@ public class ClientGUI {
                     // TODO print error message
                 }
 
+                System.out.println(nickname);
+                try {
+                    Client cli = new Client(nickname/*, ip,port*/);
+                    if (Protocol.isNickName(cli.getNickName(), Warnings) && cli.sendNickName()) {
+                        JFrame frame2 = new JFrame("Chat.ChatGUI");
+                        frame2.setContentPane(new ChatGUI(cli,frame2).Main);
+                        frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        frame2.pack();
+                        frame2.setVisible(true);
+                        frame.setVisible(false);
+                    } else {
+                        // TODO print error message in the GUI
 
-
-                if (nickname.contains(",")) {
-                    // TODO print error in GUI
-                    System.out.println("Nickname can't have ,");
-                } else {
-                    System.out.println(nickname);
-                    try {
-                        Client cli = new Client(nickname/*, ip,port*/);
-                        if (cli.sendNickName()) {
-                            JFrame frame2 = new JFrame("Chat.ChatGUI");
-                            frame2.setContentPane(new ChatGUI(cli,frame2).Main);
-                            frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                            frame2.pack();
-                            frame2.setVisible(true);
-                            frame.setVisible(false);
-                        } else {
-                            // TODO print error message in the GUI
-
-                        }
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
                     }
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
             }
         });

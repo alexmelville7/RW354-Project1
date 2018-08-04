@@ -47,13 +47,12 @@ public class Message implements Serializable {
      * */
     public void ServerSend(SocketChannel sc){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos;
+        ObjectOutputStream oos = null;
         ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
         try{
             oos = new ObjectOutputStream(baos);
         } catch (Exception E) {
             System.out.println("Error - Server Send - Could not create output stream - " + E);
-            return;
         }
 
         buffer.clear();
@@ -66,7 +65,6 @@ public class Message implements Serializable {
             baos.flush();
         } catch(Exception E) {
             System.out.println("Error - Server Send - could not parse object - " + E);
-            return;
         }
 
         buffer.clear();
@@ -83,7 +81,6 @@ public class Message implements Serializable {
             int bytesRead = 0;
             try {
                 bytesRead = sc.read(buffer);
-
             } catch (Exception E) {
                 System.out.println("Error - Server Receive - could not read from socketchannel - " + E);
             }
@@ -100,7 +97,7 @@ public class Message implements Serializable {
                 System.out.println("Error - Server Receive - could not read from output stream - " + E);
             }
         }
-        buffer.clear();
+        //buffer.clear();
         return m;
     }
 
