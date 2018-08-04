@@ -110,16 +110,17 @@ public class Server {
                         Message msg = Message.ServerRecieve(client);
                         if(msg.getMessage() == null && msg.getMessageType().equals("USER_ADD_LIST")){
                             Message m = new Message(nickNames.keySet().toString(), "USER_ADD_LIST");
+                            m.ServerSend(client);
+                        } else if (msg.getMessageType().equals("DISCONN")) {
+                            System.out.println(msg.getMessage()+ " disconnected");
+                            GlobalSend(msg);
+                            key.cancel();
+                            key.channel().close();
+                            nickNames.remove(msg.getMessage());
                         } else {
                             messages.add(msg);
                         }
 
-                        // TODO disconnect
-//                        if(!msg.getMessageType().equals("DISCONN")) {
-//                            System.out.println(msg.getMessage()+ " disconnected");
-//                            key.cancel();
-//                            key.channel().close();
-//                        }
 
                     } catch(Exception E) {
                         System.out.println("ERROR Reading.");

@@ -30,11 +30,11 @@ public class Message implements Serializable {
         this.messageType = "MESSAGE";
     }
 
-    //Used to update list of old users.
+    // Used to update list of old users.
     public Message(String user, String type) {
         this.message = user;
-        this.receiver = " ";
-        this.sender = " ";
+        this.receiver = "";
+        this.sender = "";
         this.date = new Date();
         this.messageType = type;
     }
@@ -120,6 +120,7 @@ public class Message implements Serializable {
             buffer.clear();
         } catch(Exception E) {
             System.out.println("ERROR: Sending Client side - " + E);
+
         }
         finally
         {
