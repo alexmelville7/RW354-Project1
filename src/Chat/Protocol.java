@@ -18,12 +18,4 @@ public class Protocol {
         }
         return true;
     }
-    //This is to check whether the userList is received. This will be moved soon.
-    public static boolean isReceived(String names, Client client){
-        if(names.equals("")){
-            Message m = new Message(client.getNickName(), "USER__ADD_LIST");
-            return false;
-        }
-        return true;
-    }
 }

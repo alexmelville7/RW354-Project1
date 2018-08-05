@@ -71,7 +71,7 @@ public class ClientGUI {
 
                 System.out.println(nickname);
                 try {
-                    Client cli = new Client(nickname, ip, port);
+                    Client cli = new Client(nickname, ip,port);
                     if (Protocol.isNickName(cli.getNickName(), Warnings) && cli.sendNickName()) {
                         JFrame frame2 = new JFrame("Chat.ChatGUI");
                         frame2.setContentPane(new ChatGUI(cli,frame, frame2).Main);
@@ -81,7 +81,7 @@ public class ClientGUI {
                         frame.setVisible(false);
                     } else {
                         // TODO print error message in the GUI
-
+                        Warnings.setText("Nickname must be unique.");
                     }
                 } catch (IOException e1) {
                     e1.printStackTrace();

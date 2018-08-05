@@ -3,7 +3,6 @@ package GUI;
 import Chat.Client;
 import Chat.Message;
 import Chat.Protocol;
-//import apple.laf.JRSUIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,9 +27,7 @@ public class ChatGUI {
     private JLabel WelcomeLabel;
     private JButton disconnectButton;
     private Client cli;
-    public JList lstContacts;
     private int chatIndex = 0;
-    private DefaultListModel listModel;
     private LinkedList<String> names = new LinkedList<>();
     private LinkedList<String> users = new LinkedList<>();
     private LinkedList<JTextArea> chats = new LinkedList<>();
@@ -44,7 +41,6 @@ public class ChatGUI {
         this.cli = cli;
 
         ChatArea.append("You are connected..." + "\n");
-        listModel = new DefaultListModel();
         WelcomeLabel.setText(WelcomeLabel.getText() + cli.getNickName());
         Main.setBackground(Color.lightGray);
         receive(cli);
@@ -53,23 +49,24 @@ public class ChatGUI {
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String message = textField1.getText();
-                System.out.println(message);
+                new Thread(new Runnable() {
+                    public void run() {
 
-                if (!message.isEmpty()) {
-                    try {
-                        Message m = new Message(message, cli.getNickName(), names.get(tabbedPane1.getSelectedIndex()));
-                        if(m.getMessage().length() < 200) {
-                            chats.get(chatIndex).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
-                            m.ClientSend(cli.getSockChannel(), frame, frame2);
-                        } else {
-                            chats.get(chatIndex).append("(Client): Message Exceeded max message length. Only below 200 characters please.");
+                        String message = textField1.getText();
+                        System.out.println(message);
+
+                        if (!message.isEmpty()) {
+                            try {
+                                Message m = new Message(message, cli.getNickName(), names.get(tabbedPane1.getSelectedIndex()));
+                                chats.get(chatIndex).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
+                                m.ClientSend(cli.getSockChannel(), frame, frame2);
+                            } catch (Exception E) {
+                                E.printStackTrace();
+                            }
+                            textField1.setText("");
                         }
-                    } catch (Exception E) {
-                        E.printStackTrace();
                     }
-                    textField1.setText("");
-                }
+                }).start();
             }
         });
 
@@ -77,27 +74,26 @@ public class ChatGUI {
         textField1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String message = textField1.getText();
-                System.out.println(message);
+                new Thread(new Runnable() {
+                    public void run() {
 
-                if (!message.isEmpty()) {
-                    try {
-                        Message m = new Message(message, cli.getNickName(), names.get(tabbedPane1.getSelectedIndex()));
-                        if(m.getMessage().length() < 200) {
-                            chats.get(chatIndex).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
-                            m.ClientSend(cli.getSockChannel(), frame, frame2);
-                        } else {
-                            chats.get(chatIndex).append("(Client): Message Exceeded max message length. Only below 200 characters please.");
+                        String message = textField1.getText();
+                        System.out.println(message);
+
+                        if (!message.isEmpty()) {
+                            try {
+                                Message m = new Message(message, cli.getNickName(), names.get(tabbedPane1.getSelectedIndex()));
+                                chats.get(chatIndex).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
+                                m.ClientSend(cli.getSockChannel(), frame, frame2);
+                            } catch (Exception E) {
+                                E.printStackTrace();
+                            }
+                            textField1.setText("");
                         }
-                    } catch (Exception E) {
-                        System.out.println("Error Sending message - ChatGUI - " + E);
-                        E.printStackTrace();
                     }
-                    textField1.setText("");
-                }
+                }).start();
             }
         });
-
 
         tabbedPane1.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
@@ -132,24 +128,33 @@ public class ChatGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO
-//                Message msg = new Message(cli.getNickName(), "DISCONN");
-//                msg.ClientSend(cli.getSockChannel());
+                System.out.println("Disconnect");
+                Message msg = new Message(cli.getNickName(), "DISCONN");
+                msg.ServerSend(cli.getSockChannel());
+                frame.setVisible(true);
+                frame2.setVisible(false);
+                frame2.dispose();
 
             }
         });
+
+
+
+
     }
 
     private void receive(Client cli){
         SocketChannel client = cli.getSockChannel();
         Thread t1 = new Thread(new Runnable() {
             public void run() {
-                while(true) {
+                while(!Thread.currentThread().isInterrupted()) {
                     Message m = null;
                     m = Message.ServerRecieve(client);
 
+                    // check messages
                     if (m.getMessageType().equals("MESSAGE")) {
                         if (m.getReceiver().equals("GLOBAL")) {
-                            chats.get(tabbedPane1.getSelectedIndex()).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
+                            chats.get(names.indexOf(m.getReceiver())).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
                         } else if (names.contains(m.getSender())) {
                             chats.get(names.indexOf(m.getSender())).append(m.getSender() + " (" + format.format(m.getDate()) + "): " + m.getMessage() + "\n");
                         } else {
@@ -164,23 +169,33 @@ public class ChatGUI {
                     } else if (m.getMessageType().equals("USER_ADD")) {
                         users.add(m.getMessage());
                         UserList.setListData(users.toArray());
+                        chats.get(names.indexOf("GLOBAL")).append(m.getMessage() + " connected\n");
                     } else if (m.getMessageType().equals("USER_ADD_LIST")) {
                         String str = m.getMessage();
-                        System.out.println("Userlist Received: " + Protocol.isReceived(str, cli));
+                        System.out.println("USER_ADD_LIST");
 
                         str = str.substring(1, str.length()-1);
                         String tokens[] = str.split(",");
 
                         for (int i = 0; i < tokens.length; i++) {
-                            if(!cli.getNickName().equals(tokens[i].trim())){
+                            if (!tokens[i].trim().equals(cli.getNickName())){
                                 users.add(tokens[i].trim());
                             }
                         }
                         UserList.setListData(users.toArray());
-                    } else if (m.getMessageType().equals("USER_REM")) {
-                        // TODO test
-                        listModel.remove(listModel.indexOf(m.getMessage()));
-                        UserList.setListData(listModel.toArray());
+                    } else if (m.getMessageType().equals("DISCONN") && !m.getMessage().equals(cli.getNickName())) {
+                        System.out.println("There was a disconnect");
+                        users.remove(users.indexOf(m.getMessage()));
+                        UserList.setListData(users.toArray());
+
+                        // Tell global chat
+                        chats.get(names.indexOf("GLOBAL")).append(m.getMessage() + " disconnected\n");
+
+                        // Close private chats
+                        if (names.contains(m.getMessage())) {
+                            tabbedPane1.remove(tabbedPane1.indexOfTab(m.getMessage()));
+                            chats.remove(chats.get(names.indexOf(m.getMessage())));
+                        }
                     }
                 }
             }
